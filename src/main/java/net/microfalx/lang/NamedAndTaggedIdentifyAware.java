@@ -1,5 +1,7 @@
 package net.microfalx.lang;
 
+import com.google.common.base.MoreObjects;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -39,6 +41,14 @@ public class NamedAndTaggedIdentifyAware<T> extends NamedIdentityAware<T> {
         requireNonNull(tags);
         if (this.tags == null) this.tags = new HashSet<>();
         this.tags.addAll(tags);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(NamedAndTaggedIdentifyAware.class)
+                .add("super", super.toString())
+                .add("tags", tags)
+                .toString();
     }
 
     /**

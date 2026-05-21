@@ -1,5 +1,6 @@
 package net.microfalx.lang;
 
+import com.google.common.base.MoreObjects;
 import net.microfalx.lang.annotation.Name;
 
 import static net.microfalx.lang.ArgumentUtils.requireNotEmpty;
@@ -66,6 +67,15 @@ public abstract class NamedIdentityAware<T> extends IdentityAware<T> implements 
 
     protected final String getNameAndId() {
         return getName() + " (" + getId() + ")";
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(NamedIdentityAware.class)
+                .add("super", super.toString())
+                .add("name", name)
+                .add("description", description)
+                .toString();
     }
 
     /**

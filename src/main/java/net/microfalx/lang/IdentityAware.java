@@ -1,5 +1,6 @@
 package net.microfalx.lang;
 
+import com.google.common.base.MoreObjects;
 import net.microfalx.lang.annotation.Id;
 
 import java.util.Objects;
@@ -64,6 +65,13 @@ public abstract class IdentityAware<T> implements Identifiable<T>, Cloneable {
      */
     protected void copyProperties(IdentityAware<T> source, IdentityAware<T> target) {
         // empty by default
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(IdentityAware.class)
+                .add("id", id)
+                .toString();
     }
 
     /**
