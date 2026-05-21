@@ -35,6 +35,8 @@ public class JvmUtils {
     private static volatile File homeDirectory;
     private static volatile File varDirectory;
     private static volatile File tmpDirectory;
+    private static volatile File logsDirectory;
+    private static boolean logsDirectoryExist;
     private static volatile File cacheDirectory;
     private static volatile File workingDirectory;
     private static volatile File nativeDirectory;
@@ -184,6 +186,34 @@ public class JvmUtils {
         }
         JvmUtils.workingDirectory = validateDirectoryExists(new File(removeEndSlash(workingDirectory)));
         return JvmUtils.workingDirectory;
+    }
+
+    /**
+     * Returns whether the logs directory was available at runtime.
+     *
+     * @return {@code true} if the logs directory really exists, {@code false} otherwise
+     */
+    public static boolean hasLogsDirectory() {
+        return logsDirectoryExist;
+    }
+
+    /**
+     * Returns the logs directory at runtime.
+     * <p>
+     * The application expects a directory (symlink) in the hone directory named "logs". If the logs directory
+     * is not available, the temporary directory will be used.
+     *
+     * @return a non-null instance
+     */
+    public static File getLogsDirectory() {
+        if (logsDirectory != null) return logsDirectory;
+        File directory = new File(getHomeDirectory(), "logs");
+        logsDirectoryExist = directory.exists();
+        if (!logsDirectoryExist) {
+            directory = getTemporaryDirectory();
+        }
+        logsDirectory = directory;
+        return directory;
     }
 
     /**
