@@ -1,18 +1,22 @@
 package net.microfalx.lang;
 
+import com.google.common.base.MoreObjects;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.*;
 import java.nio.file.Files;
 import java.time.LocalDateTime;
 import java.util.Locale;
+import java.util.jar.Attributes;
+import java.util.jar.JarFile;
+import java.util.jar.Manifest;
 
 import static java.lang.System.currentTimeMillis;
 import static net.microfalx.lang.ArgumentUtils.requireNonNull;
 import static net.microfalx.lang.FileUtils.validateDirectoryExists;
 import static net.microfalx.lang.FileUtils.validateFileExists;
-import static net.microfalx.lang.StringUtils.EMPTY_STRING;
-import static net.microfalx.lang.StringUtils.removeEndSlash;
+import static net.microfalx.lang.StringUtils.*;
 
 /**
  * Various utilities around JVM.
@@ -170,7 +174,7 @@ public class JvmUtils {
      * @param directory the new variable directory
      */
     public static void setVariableDirectory(File directory) {
-        JvmUtils.varDirectory = ArgumentUtils.requireNonNull(directory);
+        JvmUtils.varDirectory = requireNonNull(directory);
     }
 
     /**
@@ -278,7 +282,7 @@ public class JvmUtils {
      * @param directory the new variable directory
      */
     public static void setCacheDirectory(File directory) {
-        JvmUtils.cacheDirectory = ArgumentUtils.requireNonNull(directory);
+        JvmUtils.cacheDirectory = requireNonNull(directory);
         System.setProperty("user.cache", JvmUtils.cacheDirectory.getAbsolutePath());
     }
 
@@ -370,6 +374,16 @@ public class JvmUtils {
     }
 
     /**
+     * Loads a JAR file and extracts the information from the manifest.
+     *
+     * @param file the file
+     * @return a non-null instance
+     */
+    public static Jar getJar(File file) {
+        return new Jar(file);
+    }
+
+    /**
      * Replaces standard System properties placeholders.
      *
      * @param value the value.
@@ -426,4 +440,127 @@ public class JvmUtils {
             IOUtils.closeQuietly(ds);
         }
     }
+
+    public static class Jar {
+
+        private final File file;
+
+        private String name;
+        private String extensionName;
+        private String specificationTitle;
+        private String specificationVendor;
+        private String implementationTitle;
+        private String implementationVendor;
+        private Version implementationVersion;
+        private String implementationBuild;
+        private String buildTime;
+
+        Jar(File file) {
+            requireNonNull(file);
+            this.file = file;
+            initialize();
+        }
+
+        public File getFile() {
+            return file;
+        }
+
+        public String getName() {
+            if (implementationTitle != null) {
+                return implementationTitle;
+            } else if (extensionName != null) {
+                return extensionName;
+            } else if (name != null) {
+                return name;
+            } else {
+                return file.getName();
+            }
+        }
+
+        public String getExtensionName() {
+            return extensionName;
+        }
+
+        public String getSpecificationTitle() {
+            return specificationTitle;
+        }
+
+        public String getSpecificationVendor() {
+            return specificationVendor;
+        }
+
+        public String getImplementationTitle() {
+            return implementationTitle;
+        }
+
+        public String getImplementationVendor() {
+            return implementationVendor;
+        }
+
+        public Version getImplementationVersion() {
+            return implementationVersion;
+        }
+
+        public String getImplementationBuild() {
+            return implementationBuild;
+        }
+
+        public String getBuildTime() {
+            return buildTime;
+        }
+
+        private void initialize() {
+            Attributes mainAttributes;
+            try(JarFile jar = new JarFile(file, false, JarFile.OPEN_READ)) {
+                Manifest manifest = jar.getManifest();
+                mainAttributes = manifest.getMainAttributes();
+            } catch (Exception e) {
+                // if we cannot load the manifest, we just ignore it and return with empty values
+                return;
+            }
+            name = mainAttributes.getValue(NAME_ATTR);
+            extensionName = mainAttributes.getValue(EXTENSION_NAME_ATTR);
+            specificationTitle = mainAttributes.getValue(SPECIFICATION_TITLE_ATTR);
+            specificationVendor = mainAttributes.getValue(SPECIFICATION_VENDOR_ATTR);
+            implementationTitle = mainAttributes.getValue(IMPLEMENTATION_TITLE_ATTR);
+            implementationVendor = mainAttributes.getValue(IMPLEMENTATION_VENDOR_ATTR);
+            String versionValue = mainAttributes.getValue(IMPLEMENTATION_VERSION_ATTR);
+            implementationVersion = versionValue != null ? Version.parse(versionValue) : Version.NO_VERSION;
+            implementationBuild = mainAttributes.getValue(IMPLEMENTATION_BUILD_ATTR);
+            buildTime = mainAttributes.getValue(BUILD_TIME_ATTR);
+            String buildTimeStr = mainAttributes.getValue(BUILD_ID_ATTR);
+            long buildId = NumberUtils.toNumber(buildTimeStr, -1L).longValue();
+            if (isNotEmpty(buildTimeStr) && buildId != -1) {
+                buildId = (int) (buildId & 0xffffff);
+                implementationVersion = implementationVersion.withBuild((int) buildId);
+            }
+        }
+
+        @Override
+        public String toString() {
+            return MoreObjects.toStringHelper(this)
+                    .add("file", file)
+                    .add("name", name)
+                    .add("extensionName", extensionName)
+                    .add("specificationTitle", specificationTitle)
+                    .add("specificationVendor", specificationVendor)
+                    .add("implementationTitle", implementationTitle)
+                    .add("implementationVendor", implementationVendor)
+                    .add("implementationVersion", implementationVersion)
+                    .add("implementationBuild", implementationBuild)
+                    .add("buildTime", buildTime)
+                    .toString();
+        }
+    }
+
+    private static final String NAME_ATTR = "Name";
+    private static final String EXTENSION_NAME_ATTR = "Extension-Name";
+    private static final String SPECIFICATION_TITLE_ATTR = "Specification-Title";
+    private static final String SPECIFICATION_VENDOR_ATTR = "Specification-Vendor";
+    private static final String IMPLEMENTATION_TITLE_ATTR = "Implementation-Title";
+    private static final String IMPLEMENTATION_VENDOR_ATTR = "Implementation-Vendor";
+    private static final String IMPLEMENTATION_VERSION_ATTR = "Implementation-Version";
+    private static final String IMPLEMENTATION_BUILD_ATTR = "Implementation-Build";
+    private static final String BUILD_TIME_ATTR = "Build-Time";
+    private static final String BUILD_ID_ATTR = "Build-Id";
 }

@@ -12,6 +12,7 @@ import static net.microfalx.lang.StringUtils.toIdentifier;
 public class Version extends IdentityAware<String> implements Comparable<Version> {
 
     public static final int NO_VALUE = -1;
+    public static final Version NO_VERSION = new Version("0.0.0");
     private static final char SEPARATOR = '.';
     private static final char PRE_RELEASE_SEPARATOR = '-';
     private static final char BUILD_NO_SEPARATOR = '+';
