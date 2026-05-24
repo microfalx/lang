@@ -45,7 +45,7 @@ public class JvmUtils {
     private static volatile File varDirectory;
     private static volatile File tmpDirectory;
     private static volatile File logsDirectory;
-    private static boolean logsDirectoryExist;
+    private static Boolean logsDirectoryExist;
     private static volatile File cacheDirectory;
     private static volatile File workingDirectory;
     private static volatile File nativeDirectory;
@@ -204,6 +204,8 @@ public class JvmUtils {
      * @return {@code true} if the logs directory really exists, {@code false} otherwise
      */
     public static boolean hasLogsDirectory() {
+        // warmup the flag on first access
+        if (logsDirectoryExist == null) getLogsDirectory();
         return logsDirectoryExist;
     }
 
