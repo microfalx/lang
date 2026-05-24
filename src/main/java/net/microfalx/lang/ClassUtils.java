@@ -3,9 +3,11 @@ package net.microfalx.lang;
 import net.microfalx.lang.annotation.Provider;
 import org.atteo.classindex.ClassIndex;
 
+import java.io.File;
 import java.lang.reflect.*;
 import java.net.URI;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.time.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -433,6 +435,41 @@ public class ClassUtils {
             return constructor.newInstance();
         } catch (Exception e) {
             return rethrowExceptionAndReturn(e);
+        }
+    }
+
+    /**
+     * Returns the files (JARs) from the class path.
+     *
+     * @return a non-null instance
+     */
+    public static Collection<File> getClassPath() {
+        Collection<File> classPath = new ArrayList<>();
+        updateClasspath(ClassUtils.class.getClassLoader(), classPath);
+        if (classPath.isEmpty()) updateClassPathFromSystemProperty(classPath);
+        return classPath;
+    }
+
+    private static void updateClasspath(ClassLoader classLoader, Collection<File> classPath) {
+        while (classLoader != null) {
+            if (classLoader instanceof URLClassLoader) {
+                URL[] urls = ((URLClassLoader) classLoader).getURLs();
+                for (URL url : urls) {
+                    File file = UriUtils.getFile(url);
+                    if (file != null) classPath.add(file);
+                }
+            }
+            classLoader = classLoader.getParent();
+        }
+    }
+
+    private static void updateClassPathFromSystemProperty(Collection<File> classPath) {
+        String classpath = System.getProperty("java.class.path");
+        String[] entries = classpath.split(File.pathSeparator);
+        for (String entry : entries) {
+            if (entry.toLowerCase().endsWith(".jar")) {
+                classPath.add(new File(entry));
+            }
         }
     }
 

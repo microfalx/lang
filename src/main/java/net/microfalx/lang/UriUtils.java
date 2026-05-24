@@ -1,5 +1,6 @@
 package net.microfalx.lang;
 
+import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -170,13 +171,42 @@ public class UriUtils {
      * @return a non-null instance
      */
     public static URI replaceHost(URI uri, String ipOrHost) {
-        ArgumentUtils.requireNonNull(uri);
+        requireNonNull(uri);
         try {
             return new URI(uri.getScheme(), uri.getUserInfo(), ipOrHost, uri.getPort(), uri.getPath(),
                     uri.getQuery(), uri.getFragment());
         } catch (URISyntaxException e) {
             return ExceptionUtils.rethrowExceptionAndReturn(e);
         }
+    }
+
+    /**
+     * Returns the file from the URL.
+     *
+     * @param url the url
+     * @return the file, null if no reference can be extracted
+     */
+    public static File getFile(URL url) {
+        requireNonNull(url);
+        String protocol = url.getProtocol();
+        String path = url.getPath();
+        if (protocol.equals("jar")) {
+            try {
+                url = new URL(path);
+                path = url.getPath();
+                int index = path.indexOf('!');
+                if (index != -1) {
+                    return new File(path.substring(0, index));
+                } else {
+                    return new File(path);
+                }
+            } catch (MalformedURLException e) {
+                ExceptionUtils.rethrowException(e);
+            }
+        } else if (protocol.equals("file")) {
+            return new File(path);
+        }
+        return null;
     }
 
     /**

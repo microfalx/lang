@@ -114,4 +114,42 @@ class UriUtilsTest {
         assertEquals("net.microfalx", UriUtils.getTld("net.microfalx.lang"));
     }
 
+    @Test
+    void getFileWithJarProtocol() throws MalformedURLException {
+        java.net.URL jarUrl = new java.net.URL("jar:file:/home/user/.m2/repository/test.jar!/bin/bash");
+        java.io.File result = UriUtils.getFile(jarUrl);
+        assertNotNull(result);
+        assertEquals("/home/user/.m2/repository/test.jar", result.getPath().replace('\\', '/'));
+    }
+
+    @Test
+    void getFileWithJarProtocolAndMultipleSeparators() throws MalformedURLException {
+        java.net.URL jarUrl = new java.net.URL("jar:file:/path/to/archive.jar!/dir/file.class");
+        java.io.File result = UriUtils.getFile(jarUrl);
+        assertNotNull(result);
+        assertEquals("/path/to/archive.jar", result.getPath().replace('\\', '/'));
+    }
+
+    @Test
+    void getFileWithFileProtocol() throws MalformedURLException {
+        java.net.URL fileUrl = new java.net.URL("file:/home/user/document.txt");
+        java.io.File result = UriUtils.getFile(fileUrl);
+        assertNotNull(result);
+        assertEquals("/home/user/document.txt", result.getPath().replace('\\', '/'));
+        fileUrl = new java.net.URL("file:///home/user/document.txt");
+        result = UriUtils.getFile(fileUrl);
+        assertNotNull(result);
+        assertEquals("/home/user/document.txt", result.getPath().replace('\\', '/'));
+    }
+
+    @Test
+    void getFileWithHttpProtocol() throws MalformedURLException {
+        java.net.URL httpUrl = new java.net.URL("http://example.com/path/to/resource");
+        java.io.File result = UriUtils.getFile(httpUrl);
+        assertNull(result);
+        java.net.URL httpsUrl = new java.net.URL("https://example.com/path/to/resource");
+        result = UriUtils.getFile(httpsUrl);
+        assertNull(result);
+    }
+
 }

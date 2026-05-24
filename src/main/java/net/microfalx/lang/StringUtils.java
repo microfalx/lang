@@ -385,7 +385,17 @@ public class StringUtils {
      * @return the trimmed value
      */
     public static String trim(String value) {
-        return value != null ? value.trim() : null;
+        return trim(value, true);
+    }
+
+    /**
+     * Trims a value.
+     *
+     * @param value the value to be trimmed
+     * @return the trimmed value
+     */
+    public static String trim(String value, boolean allowNull) {
+        return value != null ? value.trim() : allowNull ? null : EMPTY_STRING;
     }
 
     /**

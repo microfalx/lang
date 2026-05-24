@@ -1,6 +1,7 @@
 package net.microfalx.lang;
 
 import org.apache.commons.lang3.math.Fraction;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -60,7 +61,7 @@ class ClassUtilsTest {
     @Test
     void getSimpleNameWithString() {
         assertEquals("I am writing java code", ClassUtils.getSimpleName("I am writing java code"));
-        assertEquals("",ClassUtils.getSimpleName((Object) null));
+        assertEquals("", ClassUtils.getSimpleName((Object) null));
     }
 
 
@@ -112,7 +113,7 @@ class ClassUtilsTest {
 
     @Test
     void getClassParametrizedTypeWithIndex() {
-        assertEquals(null, ClassUtils.getClassParametrizedType(Fraction.class,0));
+        assertEquals(null, ClassUtils.getClassParametrizedType(Fraction.class, 0));
 
     }
 
@@ -124,15 +125,20 @@ class ClassUtilsTest {
 
     @Test
     void create() {
-        assertEquals("",ClassUtils.create(String.class));
+        assertEquals("", ClassUtils.create(String.class));
         assertEquals(1, ClassUtils.create(PublicClass.class).getI());
         assertEquals(1, ClassUtils.create(ProtectedClass.class).getI());
-        assertThrows(Exception.class,() -> ClassUtils.create(Number.class));
+        assertThrows(Exception.class, () -> ClassUtils.create(Number.class));
     }
 
     @Test
     void getCompactName() {
         assertEquals("j.l.Integer", ClassUtils.getCompactName(Integer.class));
+    }
+
+    @Test
+    void getClassPath() {
+        Assertions.assertThat(ClassUtils.getClassPath().size()).isGreaterThan(10);
     }
 
     public static class PublicClass {
