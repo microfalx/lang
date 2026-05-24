@@ -4,13 +4,18 @@ import com.google.common.base.MoreObjects;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.ref.SoftReference;
 import java.net.*;
 import java.nio.file.Files;
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.Locale;
+import java.util.Objects;
+import java.util.Set;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
+import java.util.stream.Collectors;
 
 import static java.lang.System.currentTimeMillis;
 import static net.microfalx.lang.ArgumentUtils.requireNonNull;
@@ -48,6 +53,7 @@ public class JvmUtils {
     private static volatile Boolean homeWritable;
 
     private static volatile InetAddress localhost;
+    private static volatile SoftReference<Collection<Jar>> CACHED_JARS = new SoftReference<>(null);
 
     /**
      * Returns the local of this JVM.
@@ -384,6 +390,21 @@ public class JvmUtils {
     }
 
     /**
+     * Returns the JAR files from the class path.
+     *
+     * @return a non-null instance
+     */
+    public static Collection<Jar> getJars() {
+        Collection<Jar> jars = CACHED_JARS.get();
+        if (jars == null) {
+            jars = ClassUtils.getClassPath().stream()
+                    .map(JvmUtils::getJar).collect(Collectors.toList());
+            CACHED_JARS = new SoftReference<>(jars);
+        }
+        return jars;
+    }
+
+    /**
      * Replaces standard System properties placeholders.
      *
      * @param value the value.
@@ -441,24 +462,35 @@ public class JvmUtils {
         }
     }
 
-    public static class Jar {
+    public static class Jar implements Identifiable<String>, Nameable, Descriptable {
 
+        private final String id;
         private final File file;
 
-        private String name;
-        private String extensionName;
-        private String specificationTitle;
-        private String specificationVendor;
-        private String implementationTitle;
-        private String implementationVendor;
+        private String name = EMPTY_STRING;
+        private String description = EMPTY_STRING;
+        private String extensionName = EMPTY_STRING;
+        private String specificationTitle = EMPTY_STRING;
+        private String specificationVersion = EMPTY_STRING;
+        private String specificationVendor = EMPTY_STRING;
+        private String implementationTitle = EMPTY_STRING;
+        private String implementationVendor = EMPTY_STRING;
         private Version implementationVersion;
-        private String implementationBuild;
-        private String buildTime;
+        private String implementationBuild = EMPTY_STRING;
+        private String buildId = EMPTY_STRING;
+        private String buildTime = EMPTY_STRING;
+        private int attributeCount;
 
         Jar(File file) {
             requireNonNull(file);
+            this.id = Hashing.hash(file.getAbsolutePath());
             this.file = file;
             initialize();
+        }
+
+        @Override
+        public String getId() {
+            return id;
         }
 
         public File getFile() {
@@ -477,12 +509,21 @@ public class JvmUtils {
             }
         }
 
+        @Override
+        public String getDescription() {
+            return description;
+        }
+
         public String getExtensionName() {
             return extensionName;
         }
 
         public String getSpecificationTitle() {
             return specificationTitle;
+        }
+
+        public String getSpecificationVersion() {
+            return specificationVersion;
         }
 
         public String getSpecificationVendor() {
@@ -505,13 +546,21 @@ public class JvmUtils {
             return implementationBuild;
         }
 
+        public String getBuildId() {
+            return buildId;
+        }
+
         public String getBuildTime() {
             return buildTime;
         }
 
+        public int getAttributeCount() {
+            return attributeCount;
+        }
+
         private void initialize() {
             Attributes mainAttributes;
-            try(JarFile jar = new JarFile(file, false, JarFile.OPEN_READ)) {
+            try (JarFile jar = new JarFile(file, false, JarFile.OPEN_READ)) {
                 Manifest manifest = jar.getManifest();
                 mainAttributes = manifest.getMainAttributes();
             } catch (Exception e) {
@@ -522,18 +571,31 @@ public class JvmUtils {
             extensionName = mainAttributes.getValue(EXTENSION_NAME_ATTR);
             specificationTitle = mainAttributes.getValue(SPECIFICATION_TITLE_ATTR);
             specificationVendor = mainAttributes.getValue(SPECIFICATION_VENDOR_ATTR);
+            specificationVersion = mainAttributes.getValue(SPECIFICATION_VERSION_ATTR);
             implementationTitle = mainAttributes.getValue(IMPLEMENTATION_TITLE_ATTR);
             implementationVendor = mainAttributes.getValue(IMPLEMENTATION_VENDOR_ATTR);
             String versionValue = mainAttributes.getValue(IMPLEMENTATION_VERSION_ATTR);
             implementationVersion = versionValue != null ? Version.parse(versionValue) : Version.NO_VERSION;
-            implementationBuild = mainAttributes.getValue(IMPLEMENTATION_BUILD_ATTR);
-            buildTime = mainAttributes.getValue(BUILD_TIME_ATTR);
-            String buildTimeStr = mainAttributes.getValue(BUILD_ID_ATTR);
-            long buildId = NumberUtils.toNumber(buildTimeStr, -1L).longValue();
-            if (isNotEmpty(buildTimeStr) && buildId != -1) {
-                buildId = (int) (buildId & 0xffffff);
-                implementationVersion = implementationVersion.withBuild((int) buildId);
+            implementationBuild = trim(defaultIfEmpty(mainAttributes.getValue(IMPLEMENTATION_BUILD_ATTR), mainAttributes.getValue(BUILD_REVISION_ATTR)), false);
+            if (implementationBuild.startsWith(VARIABLE_PREFIX)) implementationBuild = EMPTY_STRING;
+            buildTime = defaultIfEmpty(mainAttributes.getValue(BUILD_TIME_ATTR), mainAttributes.getValue(BUILD_DATE_ATTR));
+            buildId = trim(mainAttributes.getValue(BUILD_ID_ATTR), false);
+            if (buildId.startsWith(VARIABLE_PREFIX)) buildId = EMPTY_STRING;
+            long buildIdNumber = NumberUtils.toNumber(buildId, -1L).longValue();
+            if (isNotEmpty(buildId) && buildIdNumber != -1) {
+                buildIdNumber = (int) (buildIdNumber & 0xffffff);
+                implementationVersion = implementationVersion.withBuild((int) buildIdNumber);
             }
+            StringBuilder descriptionBuilder = new StringBuilder();
+            attributeCount = 0;
+            mainAttributes.keySet().stream().map(Objects::toString)
+                    .filter(s -> !s.startsWith("Bundle-"))
+                    .filter(s -> !STANDARD_JAR_ATTRIBUTES.contains(s)).forEach(key -> {
+                        String value = defaultIfEmpty(ObjectUtils.toString(mainAttributes.getValue(key)), NA_STRING);
+                        StringUtils.append(descriptionBuilder, key + ": '" + value + "'", ", ");
+                        attributeCount++;
+                    });
+            description = descriptionBuilder.toString();
         }
 
         @Override
@@ -555,12 +617,31 @@ public class JvmUtils {
 
     private static final String NAME_ATTR = "Name";
     private static final String EXTENSION_NAME_ATTR = "Extension-Name";
+    private static final String MANIFEST_VERSION_ATTR = "Manifest-Version";
     private static final String SPECIFICATION_TITLE_ATTR = "Specification-Title";
     private static final String SPECIFICATION_VENDOR_ATTR = "Specification-Vendor";
+    private static final String SPECIFICATION_VERSION_ATTR = "Specification-Version";
     private static final String IMPLEMENTATION_TITLE_ATTR = "Implementation-Title";
     private static final String IMPLEMENTATION_VENDOR_ATTR = "Implementation-Vendor";
     private static final String IMPLEMENTATION_VERSION_ATTR = "Implementation-Version";
     private static final String IMPLEMENTATION_BUILD_ATTR = "Implementation-Build";
     private static final String BUILD_TIME_ATTR = "Build-Time";
+    private static final String BUILD_DATE_ATTR = "Build-Date";
     private static final String BUILD_ID_ATTR = "Build-Id";
+    private static final String BUILD_REVISION_ATTR = "Build-Revision";
+
+    private static final String EXPORT_PACKAGE_ATTR = "Export-Package";
+    private static final String IMPORT_PACKAGE_ATTR = "Import-Package";
+    private static final String PRIVATE_PACKAGE_ATTR = "Private-Package";
+    private static final String REQUIRE_CAPABILITY_ATTR = "Require-Capability";
+    private static final String PROVIDE_CAPABILITY_ATTR = "Provide-Capability";
+
+    private static final String VARIABLE_PREFIX = "${";
+
+    private static final Set<String> STANDARD_JAR_ATTRIBUTES = Set.of(
+            NAME_ATTR, EXTENSION_NAME_ATTR, MANIFEST_VERSION_ATTR, SPECIFICATION_TITLE_ATTR, SPECIFICATION_VENDOR_ATTR, SPECIFICATION_VERSION_ATTR,
+            IMPLEMENTATION_TITLE_ATTR, IMPLEMENTATION_VENDOR_ATTR, IMPLEMENTATION_VERSION_ATTR, IMPLEMENTATION_BUILD_ATTR,
+            BUILD_TIME_ATTR, BUILD_DATE_ATTR, BUILD_ID_ATTR, BUILD_REVISION_ATTR,
+            EXPORT_PACKAGE_ATTR, IMPORT_PACKAGE_ATTR, REQUIRE_CAPABILITY_ATTR, PROVIDE_CAPABILITY_ATTR, PRIVATE_PACKAGE_ATTR
+    );
 }

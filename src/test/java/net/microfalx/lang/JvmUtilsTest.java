@@ -1,6 +1,9 @@
 package net.microfalx.lang;
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import java.util.Collection;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -54,6 +57,12 @@ class JvmUtilsTest {
     @Test
     void isHomeWritable() {
         assertTrue(JvmUtils.isHomeWritable());
+    }
+
+    @Test
+    void getJars() {
+        Collection<JvmUtils.Jar> jars = JvmUtils.getJars();
+        Assertions.assertThat(jars.size()).isGreaterThan(10);
     }
 
 
