@@ -370,11 +370,11 @@ public class FormatterUtils {
                 return hours + "h" + (minutes > 0 ? " " + minutes + "m" : EMPTY_STRING);
             } else if (millis < ONE_MONTH) {
                 int days = (int) (millis / ONE_DAY);
-                int hours = (int) (millis - days * ONE_DAY / ONE_HOUR);
-                return hours + "d" + (hours > 0 ? " " + hours + "h" : EMPTY_STRING);
+                int hours = (int) ((millis - days * ONE_DAY) / ONE_HOUR);
+                return days + "d" + (hours > 0 ? " " + hours + "h" : EMPTY_STRING);
             } else {
-                int hours = (int) (millis / ONE_DAY);
-                return hours + "d";
+                int days = (int) (millis / ONE_DAY);
+                return days + "d";
             }
         }
     }
