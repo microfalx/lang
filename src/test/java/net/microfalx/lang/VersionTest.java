@@ -23,6 +23,16 @@ class VersionTest {
     }
 
     @Test
+    void parseFileName() {
+        assertEquals("1.0", Version.parseFileName("myapp-1.0.jar").toString());
+        assertEquals("1.0-beta", Version.parseFileName("myapp-1.0-SNAPSHOT.jar").toString());
+        assertEquals("1.0.0", Version.parseFileName("myapp-1.0.0.jar").toString());
+        assertEquals("1.0.0-beta", Version.parseFileName("myapp-1.0.0-SNAPSHOT.jar").toString());
+        assertEquals("3.5.3", Version.parseFileName("antlr@antlr-runtime-3.5.3.jar").toString());
+        assertEquals("9.6", Version.parseFileName("ow2@asm-9.6.jar").toString());
+    }
+
+    @Test
     void parseBuild() {
         assertEquals("1.0.0+10", Version.parse("1.0.0+10").toString());
     }

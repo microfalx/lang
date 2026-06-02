@@ -1,8 +1,11 @@
 package net.microfalx.lang;
 
 import java.util.StringTokenizer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static net.microfalx.lang.ArgumentUtils.requireNotEmpty;
+import static net.microfalx.lang.FileUtils.removeFileExtension;
 import static net.microfalx.lang.StringUtils.EMPTY_STRING;
 import static net.microfalx.lang.StringUtils.toIdentifier;
 
@@ -26,6 +29,11 @@ public class Version extends IdentityAware<String> implements Comparable<Version
     private int build = NO_VALUE;
     private int preRelease = NO_VALUE;
     private boolean snapshot;
+
+    public static Version parseFileName(String version) {
+        version = extractVersion(version);
+        return new Version(version);
+    }
 
     public static Version parse(String version) {
         return new Version(version);
@@ -170,6 +178,20 @@ public class Version extends IdentityAware<String> implements Comparable<Version
         if (patch != NO_VALUE) builder.append(SEPARATOR).append(patch);
         if (preRelease != NO_VALUE) builder.append(PRE_RELEASE_SEPARATOR).append(preRelease);
         if (build != NO_VALUE) builder.append(BUILD_NO_SEPARATOR).append(build);
+        if (isSnapshot()) builder.append("-beta");
         return builder.toString();
     }
+
+    private static String extractVersion(String fileName) {
+        requireNotEmpty(fileName);
+        fileName = removeFileExtension(fileName);
+        Matcher matcher = VERSION_PATTERN.matcher(fileName);
+        if (matcher.find()) {
+            return matcher.group(1);
+        } else {
+            return "0.0.0";
+        }
+    }
+
+    private static final Pattern VERSION_PATTERN = Pattern.compile("-(\\d+(\\.[\\w-]+)+)(?=$)");
 }

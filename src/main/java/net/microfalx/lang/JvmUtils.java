@@ -575,9 +575,12 @@ public class JvmUtils {
             specificationVendor = mainAttributes.getValue(SPECIFICATION_VENDOR_ATTR);
             specificationVersion = mainAttributes.getValue(SPECIFICATION_VERSION_ATTR);
             implementationTitle = mainAttributes.getValue(IMPLEMENTATION_TITLE_ATTR);
-            implementationVendor = mainAttributes.getValue(IMPLEMENTATION_VENDOR_ATTR);
-            String versionValue = mainAttributes.getValue(IMPLEMENTATION_VERSION_ATTR);
+            implementationVendor = defaultIfEmpty(mainAttributes.getValue(IMPLEMENTATION_VENDOR_ATTR), mainAttributes.getValue(BUILT_BY));
+            String versionValue = defaultIfEmpty(mainAttributes.getValue(IMPLEMENTATION_VERSION_ATTR), mainAttributes.getValue(BUNDLE_VERSION_ATTR));
             implementationVersion = versionValue != null ? Version.parse(versionValue) : Version.NO_VERSION;
+            if (Version.NO_VERSION.equals(implementationVersion)) {
+                implementationVersion = Version.parseFileName(file.getName());
+            }
             implementationBuild = trim(defaultIfEmpty(mainAttributes.getValue(IMPLEMENTATION_BUILD_ATTR), mainAttributes.getValue(BUILD_REVISION_ATTR)), false);
             if (implementationBuild.startsWith(VARIABLE_PREFIX)) implementationBuild = EMPTY_STRING;
             buildTime = defaultIfEmpty(mainAttributes.getValue(BUILD_TIME_ATTR), mainAttributes.getValue(BUILD_DATE_ATTR));
@@ -627,9 +630,11 @@ public class JvmUtils {
     private static final String IMPLEMENTATION_VENDOR_ATTR = "Implementation-Vendor";
     private static final String IMPLEMENTATION_VERSION_ATTR = "Implementation-Version";
     private static final String IMPLEMENTATION_BUILD_ATTR = "Implementation-Build";
+    private static final String BUNDLE_VERSION_ATTR = "Bundle-Version";
     private static final String BUILD_TIME_ATTR = "Build-Time";
     private static final String BUILD_DATE_ATTR = "Build-Date";
     private static final String BUILD_ID_ATTR = "Build-Id";
+    private static final String BUILT_BY = "Built-By";
     private static final String BUILD_REVISION_ATTR = "Build-Revision";
 
     private static final String EXPORT_PACKAGE_ATTR = "Export-Package";
@@ -638,12 +643,15 @@ public class JvmUtils {
     private static final String REQUIRE_CAPABILITY_ATTR = "Require-Capability";
     private static final String PROVIDE_CAPABILITY_ATTR = "Provide-Capability";
 
+    private static final String INCLUDE_RESOURCE_ATTR = "Include-Resource";
+
     private static final String VARIABLE_PREFIX = "${";
 
     private static final Set<String> STANDARD_JAR_ATTRIBUTES = Set.of(
             NAME_ATTR, EXTENSION_NAME_ATTR, MANIFEST_VERSION_ATTR, SPECIFICATION_TITLE_ATTR, SPECIFICATION_VENDOR_ATTR, SPECIFICATION_VERSION_ATTR,
             IMPLEMENTATION_TITLE_ATTR, IMPLEMENTATION_VENDOR_ATTR, IMPLEMENTATION_VERSION_ATTR, IMPLEMENTATION_BUILD_ATTR,
-            BUILD_TIME_ATTR, BUILD_DATE_ATTR, BUILD_ID_ATTR, BUILD_REVISION_ATTR,
-            EXPORT_PACKAGE_ATTR, IMPORT_PACKAGE_ATTR, REQUIRE_CAPABILITY_ATTR, PROVIDE_CAPABILITY_ATTR, PRIVATE_PACKAGE_ATTR
+            BUNDLE_VERSION_ATTR, BUILD_TIME_ATTR, BUILD_DATE_ATTR, BUILD_ID_ATTR, BUILD_REVISION_ATTR, BUILT_BY,
+            EXPORT_PACKAGE_ATTR, IMPORT_PACKAGE_ATTR, REQUIRE_CAPABILITY_ATTR, PROVIDE_CAPABILITY_ATTR, PRIVATE_PACKAGE_ATTR,
+            INCLUDE_RESOURCE_ATTR
     );
 }
