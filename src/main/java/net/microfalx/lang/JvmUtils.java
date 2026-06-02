@@ -479,7 +479,7 @@ public class JvmUtils {
         private String implementationVendor = EMPTY_STRING;
         private Version implementationVersion;
         private String implementationBuild = EMPTY_STRING;
-        private String buildId = EMPTY_STRING;
+        private String buildNumber = EMPTY_STRING;
         private String buildTime = EMPTY_STRING;
         private int attributeCount;
 
@@ -548,8 +548,8 @@ public class JvmUtils {
             return implementationBuild;
         }
 
-        public String getBuildId() {
-            return buildId;
+        public String getBuildNumber() {
+            return buildNumber;
         }
 
         public String getBuildTime() {
@@ -584,10 +584,10 @@ public class JvmUtils {
             implementationBuild = trim(defaultIfEmpty(mainAttributes.getValue(IMPLEMENTATION_BUILD_ATTR), mainAttributes.getValue(BUILD_REVISION_ATTR)), false);
             if (implementationBuild.startsWith(VARIABLE_PREFIX)) implementationBuild = EMPTY_STRING;
             buildTime = defaultIfEmpty(mainAttributes.getValue(BUILD_TIME_ATTR), mainAttributes.getValue(BUILD_DATE_ATTR));
-            buildId = trim(mainAttributes.getValue(BUILD_ID_ATTR), false);
-            if (buildId.startsWith(VARIABLE_PREFIX)) buildId = EMPTY_STRING;
-            long buildIdNumber = NumberUtils.toNumber(buildId, -1L).longValue();
-            if (isNotEmpty(buildId) && buildIdNumber != -1) {
+            buildNumber = trim(defaultIfEmpty(mainAttributes.getValue(BUILD_ID_ATTR), mainAttributes.getValue(BUILD_NUMBER)), false);
+            if (buildNumber.startsWith(VARIABLE_PREFIX)) buildNumber = EMPTY_STRING;
+            long buildIdNumber = NumberUtils.toNumber(buildNumber, -1L).longValue();
+            if (isNotEmpty(buildNumber) && buildIdNumber != -1) {
                 buildIdNumber = (int) (buildIdNumber & 0xffffff);
                 implementationVersion = implementationVersion.withBuild((int) buildIdNumber);
             }
@@ -635,6 +635,7 @@ public class JvmUtils {
     private static final String BUILD_DATE_ATTR = "Build-Date";
     private static final String BUILD_ID_ATTR = "Build-Id";
     private static final String BUILT_BY = "Built-By";
+    private static final String BUILD_NUMBER = "Build-Number";
     private static final String BUILD_REVISION_ATTR = "Build-Revision";
 
     private static final String EXPORT_PACKAGE_ATTR = "Export-Package";
@@ -650,7 +651,7 @@ public class JvmUtils {
     private static final Set<String> STANDARD_JAR_ATTRIBUTES = Set.of(
             NAME_ATTR, EXTENSION_NAME_ATTR, MANIFEST_VERSION_ATTR, SPECIFICATION_TITLE_ATTR, SPECIFICATION_VENDOR_ATTR, SPECIFICATION_VERSION_ATTR,
             IMPLEMENTATION_TITLE_ATTR, IMPLEMENTATION_VENDOR_ATTR, IMPLEMENTATION_VERSION_ATTR, IMPLEMENTATION_BUILD_ATTR,
-            BUNDLE_VERSION_ATTR, BUILD_TIME_ATTR, BUILD_DATE_ATTR, BUILD_ID_ATTR, BUILD_REVISION_ATTR, BUILT_BY,
+            BUNDLE_VERSION_ATTR, BUILD_TIME_ATTR, BUILD_DATE_ATTR, BUILD_ID_ATTR, BUILD_NUMBER, BUILD_REVISION_ATTR, BUILT_BY,
             EXPORT_PACKAGE_ATTR, IMPORT_PACKAGE_ATTR, REQUIRE_CAPABILITY_ATTR, PROVIDE_CAPABILITY_ATTR, PRIVATE_PACKAGE_ATTR,
             INCLUDE_RESOURCE_ATTR
     );
