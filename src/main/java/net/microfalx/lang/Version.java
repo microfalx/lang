@@ -6,8 +6,7 @@ import java.util.regex.Pattern;
 
 import static net.microfalx.lang.ArgumentUtils.requireNotEmpty;
 import static net.microfalx.lang.FileUtils.removeFileExtension;
-import static net.microfalx.lang.StringUtils.EMPTY_STRING;
-import static net.microfalx.lang.StringUtils.toIdentifier;
+import static net.microfalx.lang.StringUtils.*;
 
 /**
  * A class which provides support for <a href="https://semver.org/">SemVer2</a>.
@@ -173,12 +172,20 @@ public class Version extends IdentityAware<String> implements Comparable<Version
 
     @Override
     public String toString() {
+        return toString(true);
+    }
+
+    public String toString(boolean includeBeta) {
         StringBuilder builder = new StringBuilder();
         builder.append(major).append(SEPARATOR).append(minor);
         if (patch != NO_VALUE) builder.append(SEPARATOR).append(patch);
-        if (preRelease != NO_VALUE) builder.append(PRE_RELEASE_SEPARATOR).append(preRelease);
+        String betaSuffix = includeBeta && isSnapshot() ? "beta" : EMPTY_STRING;
+        if (preRelease != NO_VALUE || isNotEmpty(betaSuffix)) {
+            builder.append(PRE_RELEASE_SEPARATOR);
+            if (preRelease != NO_VALUE) builder.append(preRelease);
+            if (isNotEmpty(betaSuffix)) builder.append(betaSuffix);
+        }
         if (build != NO_VALUE) builder.append(BUILD_NO_SEPARATOR).append(build);
-        if (isSnapshot()) builder.append("-beta");
         return builder.toString();
     }
 

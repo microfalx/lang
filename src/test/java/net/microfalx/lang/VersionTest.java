@@ -10,10 +10,10 @@ class VersionTest {
     void parseSimple() {
         assertEquals("1.0", Version.parse("1.0").toString());
         assertEquals("1.0", Version.parse("1.0").toTag());
-        assertEquals("1.0", Version.parse("1.0-SNAPSHOT").toString());
+        assertEquals("1.0-beta", Version.parse("1.0-SNAPSHOT").toString());
         assertEquals("1.0.latest", Version.parse("1.0-SNAPSHOT").toTag());
         assertEquals("1.0.0", Version.parse("1.0.0").toString());
-        assertEquals("1.0.0", Version.parse("1.0.0-SNAPSHOT").toString());
+        assertEquals("1.0.0-beta", Version.parse("1.0.0-SNAPSHOT").toString());
         assertEquals("1.0.0", Version.parse("1.0.0").toTag());
         assertEquals("1.0.latest", Version.parse("1.0.0-SNAPSHOT").toTag());
         assertEquals("1.0.1", Version.parse("1.0.1").toString());
