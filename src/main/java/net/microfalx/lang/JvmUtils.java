@@ -189,12 +189,22 @@ public class JvmUtils {
      * @return a non-null instance
      */
     public static File getWorkingDirectory() {
+        return getWorkingDirectory(true);
+    }
+
+    /**
+     * Returns the working directory.
+     *
+     * @return a non-null instance
+     */
+    public static File getWorkingDirectory(boolean validate) {
         if (workingDirectory != null) return workingDirectory;
         String workingDirectory = System.getProperty("user.dir");
         if (workingDirectory == null) {
             throw new IllegalStateException("JVM does not provide system property 'user.dir'");
         }
-        JvmUtils.workingDirectory = validateDirectoryExists(new File(removeEndSlash(workingDirectory)));
+        JvmUtils.workingDirectory = new File(removeEndSlash(workingDirectory));
+        if (validate) validateDirectoryExists(JvmUtils.workingDirectory);
         return JvmUtils.workingDirectory;
     }
 
