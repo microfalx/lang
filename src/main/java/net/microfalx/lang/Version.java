@@ -9,7 +9,7 @@ import static net.microfalx.lang.FileUtils.removeFileExtension;
 import static net.microfalx.lang.StringUtils.*;
 
 /**
- * A class which provides support for <a href="https://semver.org/">SemVer2</a>.
+ * A class providing support for <a href="https://semver.org/">SemVer2</a>.
  */
 public class Version extends IdentityAware<String> implements Comparable<Version> {
 
@@ -29,11 +29,23 @@ public class Version extends IdentityAware<String> implements Comparable<Version
     private int preRelease = NO_VALUE;
     private boolean snapshot;
 
-    public static Version parseFileName(String version) {
-        version = extractVersion(version);
+    /**
+     * Parses a version from a file name.
+     *
+     * @param fileName the file name
+     * @return a non-null instance
+     */
+    public static Version parseFileName(String fileName) {
+        String version = extractVersion(fileName);
         return new Version(version);
     }
 
+    /**
+     * Parses a version.
+     *
+     * @param version tbe version text
+     * @return a non-null instance
+     */
     public static Version parse(String version) {
         return new Version(version);
     }
@@ -73,6 +85,18 @@ public class Version extends IdentityAware<String> implements Comparable<Version
     }
 
     /**
+     * Returns a copy of this version with a different major number.
+     *
+     * @param major the new major number
+     * @return a new instance
+     */
+    public Version withMajor(int major) {
+        Version copy = (Version) copy();
+        copy.major = major;
+        return copy;
+    }
+
+    /**
      * Returns the MINOR component of the version
      *
      * @return a positive integer
@@ -82,12 +106,36 @@ public class Version extends IdentityAware<String> implements Comparable<Version
     }
 
     /**
+     * Returns a copy of this version with a different patch number.
+     *
+     * @param minor the new minor number
+     * @return a new instance
+     */
+    public Version withMinor(int minor) {
+        Version copy = (Version) copy();
+        copy.minor = minor;
+        return copy;
+    }
+
+    /**
      * Returns the PATCH component of the version
      *
      * @return a positive integer, {@link  #NO_VALUE} if not provided
      */
     public int getPatch() {
         return patch;
+    }
+
+    /**
+     * Returns a copy of this version with a different patch number.
+     *
+     * @param patch the new patch number
+     * @return a new instance
+     */
+    public Version withPatch(int patch) {
+        Version copy = (Version) copy();
+        copy.patch = patch;
+        return copy;
     }
 
     /**
@@ -108,6 +156,18 @@ public class Version extends IdentityAware<String> implements Comparable<Version
     public Version withBuild(int build) {
         Version copy = (Version) copy();
         copy.build = build;
+        return copy;
+    }
+
+    /**
+     * Returns a copy of this version with a different build number.
+     *
+     * @param snapshot {@code true} if a snapshot, {@code false} otherwise
+     * @return a new instance
+     */
+    public Version withSnapshot(boolean snapshot) {
+        Version copy = (Version) copy();
+        copy.snapshot = snapshot;
         return copy;
     }
 
