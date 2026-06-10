@@ -224,10 +224,11 @@ public class ClassUtils {
      * @param className the class name
      * @return {@code true} if exists, {@code false} otherwise
      */
+    @SuppressWarnings("ConstantValue")
     public static boolean exists(String className) {
         try {
             return Class.forName(className) != null;
-        } catch (ClassNotFoundException e) {
+        } catch (ClassNotFoundException | NoClassDefFoundError e) {
             return false;
         }
     }
