@@ -240,7 +240,7 @@ public class TimeUtils {
     }
 
     /**
-     * Converts a duration as value & unit to {@link Duration}.
+     * Converts a duration as value &amp; unit to {@link Duration}.
      *
      * @param duration the duration
      * @param unit     the unit of measure
@@ -444,7 +444,7 @@ public class TimeUtils {
     /**
      * Parses a date/time.
      * <p>
-     * The method accepts a range of date/time & date formats (including ISO).
+     * The method accepts a range of date/time &amp; date formats (including ISO).
      *
      * @param temporal the date/time as String
      * @return the date/time, null if input is null or empty
@@ -468,7 +468,7 @@ public class TimeUtils {
     /**
      * Parses a date/time.
      * <p>
-     * The method accepts a range of date/time & date formats (including ISO).
+     * The method accepts a range of date/time &amp; date formats (including ISO).
      *
      * @param temporal the date/time as String
      * @return the date/time, null if input is null or empty
@@ -488,7 +488,7 @@ public class TimeUtils {
     /**
      * Parses a date/time.
      * <p>
-     * The method accepts a range of date/time & date formats (including ISO).
+     * The method accepts a range of date/time &amp; date formats (including ISO).
      *
      * @param temporal the date/time as String
      * @return the date/time, null if input is null or empty
