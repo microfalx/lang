@@ -230,12 +230,16 @@ public class Version extends IdentityAware<String> implements Comparable<Version
         }
     }
 
-    @Override
-    public String toString() {
-        return toString(true);
+    public String toMaven() {
+        return toString(true, true);
     }
 
-    public String toString(boolean includeBeta) {
+    @Override
+    public String toString() {
+        return toString(true, false);
+    }
+
+    public String toString(boolean includeBeta, boolean raw) {
         StringBuilder builder = new StringBuilder();
         builder.append(major).append(SEPARATOR).append(minor);
         if (patch != NO_VALUE) builder.append(SEPARATOR).append(patch);
