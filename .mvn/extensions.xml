@@ -1,7 +1,0 @@
-<extensions>
-    <extension>
-        <groupId>net.microfalx.talos</groupId>
-        <artifactId>talos-maven-extension</artifactId>
-        <version>1.0.5</version>
-    </extension>
-</extensions>
