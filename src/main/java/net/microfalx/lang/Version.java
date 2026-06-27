@@ -18,7 +18,9 @@ public class Version extends IdentityAware<String> implements Comparable<Version
     private static final char SEPARATOR = '.';
     private static final char PRE_RELEASE_SEPARATOR = '-';
     private static final char BUILD_NO_SEPARATOR = '+';
-    private static final String SNAPSHOT = "-SNAPSHOT";
+    private static final String BETA = "beta";
+    private static final String SNAPSHOT = "SNAPSHOT";
+    private static final String SNAPSHOT_SUFFIX = "-" + SNAPSHOT;
 
     private final String value;
 
@@ -48,6 +50,29 @@ public class Version extends IdentityAware<String> implements Comparable<Version
      */
     public static Version parse(String version) {
         return new Version(version);
+    }
+
+    /**
+     * Creates a new instance with a given major and minor.
+     *
+     * @param major the major
+     * @param minor the minor
+     * @return a non-null inst
+     */
+    public static Version of(int major, int minor) {
+        return new Version(major + "." + minor);
+    }
+
+    /**
+     * Creates a new instance with a given major, minor, and patch.
+     *
+     * @param major the major
+     * @param minor the minor
+     * @param patch the patch
+     * @return a non-null instance
+     */
+    public static Version of(int major, int minor, int patch) {
+        return new Version(major + "." + minor + "." + patch);
     }
 
     Version(String value) {
@@ -191,7 +216,7 @@ public class Version extends IdentityAware<String> implements Comparable<Version
 
     private void parse() {
         snapshot = value.toUpperCase().contains(SNAPSHOT);
-        String normalizedValue = StringUtils.replaceAll(value, SNAPSHOT, EMPTY_STRING);
+        String normalizedValue = StringUtils.replaceAll(value, SNAPSHOT_SUFFIX, EMPTY_STRING);
         String[] parts = StringUtils.split(normalizedValue, ".");
         major = parseNumber(parts[0]);
         if (parts.length > 1) minor = parseNumber(parts[1]);
@@ -212,6 +237,8 @@ public class Version extends IdentityAware<String> implements Comparable<Version
             }
             patch = parseNumber(patchString);
         }
+        if (major < 0) throw new IllegalArgumentException("Invalid version, major version is negative: " + value);
+        if (minor < 0) throw new IllegalArgumentException("Invalid version, minor version is negative: " + value);
     }
 
     private int parseNumber(String value) {
@@ -243,7 +270,7 @@ public class Version extends IdentityAware<String> implements Comparable<Version
         StringBuilder builder = new StringBuilder();
         builder.append(major).append(SEPARATOR).append(minor);
         if (patch != NO_VALUE) builder.append(SEPARATOR).append(patch);
-        String betaSuffix = includeBeta && isSnapshot() ? "beta" : EMPTY_STRING;
+        String betaSuffix = getBetaSuffix(includeBeta, raw);
         if (preRelease != NO_VALUE || isNotEmpty(betaSuffix)) {
             builder.append(PRE_RELEASE_SEPARATOR);
             if (preRelease != NO_VALUE) builder.append(preRelease);
@@ -261,6 +288,14 @@ public class Version extends IdentityAware<String> implements Comparable<Version
             return matcher.group(1);
         } else {
             return "0.0.0";
+        }
+    }
+
+    private String getBetaSuffix(boolean includeBeta, boolean raw) {
+        if (includeBeta && isSnapshot()) {
+            return raw ? SNAPSHOT : BETA;
+        } else {
+            return EMPTY_STRING;
         }
     }
 
