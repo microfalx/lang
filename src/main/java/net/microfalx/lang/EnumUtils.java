@@ -84,7 +84,6 @@ public class EnumUtils {
     @SuppressWarnings("unchecked")
     public static <E extends Enum<E>> E fromOrdinal(Class<E> enumClass, int ordinal, E defaultValue) {
         requireNonNull(enumClass);
-
         Map<Integer, E> map = buildFromOrdinalCache(enumClass);
         Enum<?> _enum = map.get(ordinal);
         return _enum != null ? (E) _enum : defaultValue;
@@ -153,6 +152,23 @@ public class EnumUtils {
             if (_value == value) return true;
         }
         return false;
+    }
+
+    /**
+     * Adds a new value to an existing set of enums.
+     *
+     * @param values the original set
+     * @param value  the enum to add to the set
+     * @param <E>    the enum type
+     * @return a new (enum) set
+     */
+    public static <E extends Enum<E>> Set<E> add(Set<E> values, E value) {
+        requireNonNull(values);
+        requireNonNull(value);
+        EnumSet<E> newSet = EnumSet.noneOf(value.getDeclaringClass());
+        newSet.addAll(values);
+        values.add(value);
+        return newSet;
     }
 
     private static Collection<String> getAliases(Enum<?> enumInstance) {
