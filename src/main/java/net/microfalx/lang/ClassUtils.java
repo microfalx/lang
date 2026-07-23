@@ -198,6 +198,30 @@ public class ClassUtils {
     }
 
     /**
+     * Returns whether the type of two objects is the same
+     *
+     * @param obj1 the first object
+     * @param obj2 the second object
+     * @return {@code true} if the objects are of the same type, {@code false} otherwise
+     */
+    public static boolean isSameType(Object obj1, Object obj2) {
+        if (obj1 == null || obj2 == null) return false;
+        return obj1.getClass().equals(obj2.getClass());
+    }
+
+    /**
+     * Returns whether the type of two objects is the same
+     *
+     * @param clazz1 the first class
+     * @param clazz2 the second class
+     * @return {@code true} if the classes are the same, {@code false} otherwise
+     */
+    public static boolean isSameType(Class<?> clazz1, Class<?> clazz2) {
+        if (clazz1 == null || clazz2 == null) return false;
+        return clazz1.equals(clazz2);
+    }
+
+    /**
      * Returns whether the object represents a class is part of the JDK.
      *
      * @param value the object
