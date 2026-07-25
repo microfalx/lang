@@ -1,4 +1,4 @@
-package net.microfalx.lang;
+package net.microfalx.lang.service;
 
 /**
  * Base class for simple application services.
@@ -8,12 +8,16 @@ public interface Service {
     /**
      * Starts the service.
      */
-    void start();
+    default void start() {
+        // most services would not need to start
+    }
 
     /**
      * Stops the service.
      */
-    void stop();
+    default void stop() {
+        // most services would not need to stop/cleanup
+    }
 
     /**
      * Loads a service implementation.
