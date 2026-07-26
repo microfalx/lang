@@ -196,6 +196,28 @@ public class NumberUtils {
     }
 
     /**
+     * Returns the average.
+     *
+     * @param sum   the sum of the measurement
+     * @param count the number of measurements
+     * @return the average
+     */
+    public static float average(float sum, float count) {
+        return count == 0 ? 0 : sum / count;
+    }
+
+    /**
+     * Returns the average.
+     *
+     * @param sum   the sum of the measurement
+     * @param count the number of measurements
+     * @return the average
+     */
+    public static double average(double sum, double count) {
+        return count == 0 ? 0 : sum / count;
+    }
+
+    /**
      * Returns whether the number can be rounded at the give precision or it is too small to be close to 0.
      *
      * @param value     the value
