@@ -269,6 +269,22 @@ public class ClassUtils {
     }
 
     /**
+     * Returns all interfaces implemented by the given object
+     *
+     * @param clazz the class
+     * @return a non-null set
+     */
+    public static Set<Class<?>> getInterfaces(Class<?> clazz) {
+        requireNonNull(clazz);
+        Set<Class<?>> classes = new HashSet<>();
+        while (clazz != Object.class) {
+            classes.addAll(Arrays.asList(clazz.getInterfaces()));
+            clazz = clazz.getSuperclass();
+        }
+        return classes;
+    }
+
+    /**
      * Returns a collection of provider classes for a given type.
      *
      * @param providerClass the provider class

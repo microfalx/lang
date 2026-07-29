@@ -20,7 +20,7 @@ import static net.microfalx.lang.ClassUtils.isSubClassOf;
  * A factory which provides implementations of services. The factory uses the Java ServiceLoader mechanism to
  * load implementations of services.
  */
-class ServiceFactory {
+public class ServiceFactory {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ServiceFactory.class);
 
@@ -56,6 +56,35 @@ class ServiceFactory {
     }
 
     /**
+     * Checks if a service is loaded.
+     *
+     * @param serviceClass the class of the service to check
+     * @param <S>          the type of the service
+     * @return true if the service is loaded, false otherwise
+     */
+    public static <S extends Service> boolean isLoaded(Class<S> serviceClass) {
+        requireNonNull(serviceClass);
+        return services.containsKey(serviceClass);
+    }
+
+    /**
+     * Registers a new service.
+     *
+     * @param service the service instance
+     * @param <S>     the service type
+     */
+    @SuppressWarnings("unchecked")
+    public static <S extends Service> void register(S service) {
+        requireNonNull(service);
+        synchronized (ServiceFactory.class) {
+            ClassUtils.getInterfaces(service.getClass()).stream()
+                    .filter(Service.class::isAssignableFrom)
+                    .forEach(serviceClass -> services.put(serviceClass, service));
+            initialize(service, (Class<S>) service.getClass());
+        }
+    }
+
+    /**
      * Loads a service.
      * <p>
      * The factory uses the Java {@link ServiceLoader} mechanism to load implementations of services and
@@ -84,12 +113,7 @@ class ServiceFactory {
                     + ": " + services.stream().map(ClassUtils::getName).collect(Collectors.joining(",")));
         } else if (!services.isEmpty()) {
             S service = services.iterator().next();
-            if (!isSubClassOf(service, serviceClass)) {
-                throw new ServiceException("The service " + ClassUtils.getName(service) + " is not a subclass of "
-                        + ClassUtils.getName(serviceClass));
-            }
-            if (service instanceof Initializable) ((Initializable) service).initialize();
-            service.start();
+            initialize(service, serviceClass);
             return service;
         } else {
             throw new ServiceException("A service of type " + serviceClass.getName() + " could not be found");
@@ -100,5 +124,14 @@ class ServiceFactory {
         if (initialized.compareAndSet(false, true)) {
             Runtime.getRuntime().addShutdownHook(new Thread(ServiceFactory::shutdown));
         }
+    }
+
+    private static <S extends Service> void initialize(S service, Class<S> serviceClass) {
+        if (!isSubClassOf(service, serviceClass)) {
+            throw new ServiceException("The service " + ClassUtils.getName(service) + " is not a subclass of "
+                    + ClassUtils.getName(serviceClass));
+        }
+        if (service instanceof Initializable) ((Initializable) service).initialize();
+        service.start();
     }
 }
