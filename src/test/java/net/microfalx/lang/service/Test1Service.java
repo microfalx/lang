@@ -6,6 +6,6 @@ import org.atteo.classindex.IndexSubclasses;
 public interface Test1Service extends Service {
 
     static Test1Service getInstance() {
-        return Service.load(Test1Service.class);
+        return Service.lookup(Test1Service.class);
     }
 }

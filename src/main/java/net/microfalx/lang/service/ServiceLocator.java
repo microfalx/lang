@@ -17,12 +17,14 @@ import static net.microfalx.lang.ArgumentUtils.requireNonNull;
 import static net.microfalx.lang.ClassUtils.isSubClassOf;
 
 /**
- * A factory which provides implementations of services. The factory uses the Java ServiceLoader mechanism to
- * load implementations of services.
+ * A factory which provides implementations of services.
+ * <p>
+ * The factory uses the JDK {@link ServiceLoader} and {@link ClassUtils#resolveProviderInstances(Class)}
+ * to discover the implementations of services.
  */
-public class ServiceFactory {
+public class ServiceLocator {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ServiceFactory.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ServiceLocator.class);
 
     private static final Map<Class<?>, Service> services = new ConcurrentHashMap<>();
     private static final AtomicBoolean initialized = new AtomicBoolean(false);
@@ -32,7 +34,7 @@ public class ServiceFactory {
      * that all services are properly stopped.
      */
     public static void shutdown() {
-        synchronized (ServiceFactory.class) {
+        synchronized (ServiceLocator.class) {
             LOGGER.info("Shutting down services");
             services.values().forEach(Service::stop);
             services.clear();
@@ -47,10 +49,16 @@ public class ServiceFactory {
      */
     public static <S extends Service> void shutdown(Class<S> serviceClass) {
         requireNonNull(serviceClass);
-        synchronized (ServiceFactory.class) {
+        synchronized (ServiceLocator.class) {
             LOGGER.info("Shutting down service {}", ClassUtils.getName(serviceClass));
             Service service = services.remove(serviceClass);
-            if (service != null) service.stop();
+            if (service != null) {
+                try {
+                    service.stop();
+                } catch (Exception e) {
+                    LOGGER.atWarn().setCause(e).log("Error while shutting down service {}", ClassUtils.getName(serviceClass));
+                }
+            }
             services.remove(serviceClass);
         }
     }
@@ -76,7 +84,7 @@ public class ServiceFactory {
     @SuppressWarnings("unchecked")
     public static <S extends Service> void register(S service) {
         requireNonNull(service);
-        synchronized (ServiceFactory.class) {
+        synchronized (ServiceLocator.class) {
             ClassUtils.getInterfaces(service.getClass()).stream()
                     .filter(Service.class::isAssignableFrom)
                     .forEach(serviceClass -> services.put(serviceClass, service));
@@ -85,9 +93,9 @@ public class ServiceFactory {
     }
 
     /**
-     * Loads a service.
+     * Looks up a service.
      * <p>
-     * The factory uses the Java {@link ServiceLoader} mechanism to load implementations of services and
+     * The locator uses the Java {@link ServiceLoader} mechanism to load implementations of services and
      * {@link ClassUtils#resolveProviderInstances(Class)}. If a service has already been loaded (and initialized),
      * it will be returned from the cache.
      *
@@ -96,12 +104,11 @@ public class ServiceFactory {
      * @return an instance of the requested service
      */
     @SuppressWarnings("unchecked")
-    public static <S extends Service> S load(Class<S> serviceClass) {
+    public static <S extends Service> S lookup(Class<S> serviceClass) {
         requireNonNull(serviceClass);
         return (S) services.computeIfAbsent(serviceClass, c -> doLoad((Class<S>) c));
     }
 
-    @SuppressWarnings("unchecked")
     private static <S extends Service> S doLoad(Class<S> serviceClass) {
         LOGGER.info("Loading service {}", ClassUtils.getName(serviceClass));
         initShutdown();
@@ -122,7 +129,7 @@ public class ServiceFactory {
 
     private static void initShutdown() {
         if (initialized.compareAndSet(false, true)) {
-            Runtime.getRuntime().addShutdownHook(new Thread(ServiceFactory::shutdown));
+            Runtime.getRuntime().addShutdownHook(new Thread(ServiceLocator::shutdown));
         }
     }
 

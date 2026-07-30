@@ -20,14 +20,14 @@ public interface Service {
     }
 
     /**
-     * Loads a service implementation.
+     * Looks up a service.
      *
      * @param serviceClass the service class
      * @param <T>          the service type
      * @return the service implementation
-     * @see ServiceFactory#load(Class)
+     * @see ServiceLocator#lookup(Class)
      */
-    static <T extends Service> T load(Class<T> serviceClass) {
-        return ServiceFactory.load(serviceClass);
+    static <T extends Service> T lookup(Class<T> serviceClass) {
+        return ServiceLocator.lookup(serviceClass);
     }
 }

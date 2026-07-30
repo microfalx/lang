@@ -5,33 +5,33 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class ServiceFactoryTest {
+class ServiceLocatorTest {
 
     @BeforeEach
     void setup() {
-        ServiceFactory.shutdown();
+        ServiceLocator.shutdown();
     }
 
     @Test
     void service1() {
         Test1Service instance = Test1Service.getInstance();
         assertNotNull(instance);
-        assertTrue(ServiceFactory.isLoaded(Test1Service.class));
+        assertTrue(ServiceLocator.isLoaded(Test1Service.class));
     }
 
     @Test
     void service2() {
         Test2Service instance = Test2Service.getInstance();
         assertNotNull(instance);
-        assertTrue(ServiceFactory.isLoaded(Test2Service.class));
+        assertTrue(ServiceLocator.isLoaded(Test2Service.class));
     }
 
     @Test
     void register() {
-        ServiceFactory.register(new Test1ServiceImpl());
-        ServiceFactory.register(new Test2ServiceImpl());
-        assertTrue(ServiceFactory.isLoaded(Test1Service.class));
-        assertTrue(ServiceFactory.isLoaded(Test2Service.class));
+        ServiceLocator.register(new Test1ServiceImpl());
+        ServiceLocator.register(new Test2ServiceImpl());
+        assertTrue(ServiceLocator.isLoaded(Test1Service.class));
+        assertTrue(ServiceLocator.isLoaded(Test2Service.class));
     }
 
 }
