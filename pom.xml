@@ -64,7 +64,7 @@
     <inceptionYear>2022</inceptionYear>
 
     <properties>
-        <java.version>11</java.version>
+        <java.version>17</java.version>
         <bom.version>1.0.21</bom.version>
     </properties>
 
@@ -116,6 +116,23 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jodd</groupId>
+            <artifactId>jodd-bean</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.14.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
         </dependency>
 
         <!-- Tests -->
