@@ -2,6 +2,7 @@ package net.microfalx.lang.service;
 
 import net.microfalx.lang.ClassUtils;
 import net.microfalx.lang.Initializable;
+import net.microfalx.lang.Releasable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,6 +55,13 @@ public class ServiceLocator {
             Service service = services.remove(serviceClass);
             if (service != null) {
                 try {
+                    if (service instanceof Releasable) {
+                        try {
+                            ((Releasable) service).release();
+                        } catch (Exception e) {
+                            LOGGER.atWarn().setCause(e).log("Error while releasing service {}", ClassUtils.getName(serviceClass));
+                        }
+                    }
                     service.stop();
                 } catch (Exception e) {
                     LOGGER.atWarn().setCause(e).log("Error while shutting down service {}", ClassUtils.getName(serviceClass));
