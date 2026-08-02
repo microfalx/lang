@@ -990,8 +990,8 @@ public final class Logger implements Identifiable<String>, Nameable, Descriptabl
         public static final String BULLET = "•";
         public static final String TRIANGULAR_BULLET = "‣";
         public static final String WHITE_BULLET = "◦";
-        public static final String CIRCLE = "○";
-        public static final String BLACK_CIRCLE = "●";
+        public static final String LARGE_CIRCLE = "○";
+        public static final String LARGE_BLACK_CIRCLE = "●";
         public static final String SMALL_SQUARE = "▪";
         public static final String WHITE_SMALL_SQUARE = "▫";
         public static final String TRIANGLE_RIGHT = "▶";
@@ -1152,8 +1152,13 @@ public final class Logger implements Identifiable<String>, Nameable, Descriptabl
             return this;
         }
 
+        public Entry square() {
+            append(Glyph.SMALL_SQUARE).append(SPACE_CHAR);
+            return this;
+        }
+
         public Entry triangle() {
-            append(Glyph.WARNING).append(SPACE_CHAR);
+            append(Glyph.TRIANGULAR_BULLET).append(SPACE_CHAR);
             return this;
         }
 
