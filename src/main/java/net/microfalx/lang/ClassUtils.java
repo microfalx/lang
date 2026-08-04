@@ -329,6 +329,8 @@ public class ClassUtils {
                 providerInstances.add(create((Class<T>) providerClassLocated));
             } catch (Exception e) {
                 // ignore this for now, maybe report somewhere
+            } catch (NoClassDefFoundError e) {
+                // in case of such error, the class is discovered, direct but dependencies are not available
             }
         }
         return providerInstances;
