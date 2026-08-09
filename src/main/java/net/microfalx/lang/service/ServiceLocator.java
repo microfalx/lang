@@ -114,7 +114,14 @@ public class ServiceLocator {
     @SuppressWarnings("unchecked")
     public static <S extends Service> S lookup(Class<S> serviceClass) {
         requireNonNull(serviceClass);
-        return (S) services.computeIfAbsent(serviceClass, c -> doLoad((Class<S>) c));
+        synchronized (ServiceLocator.class) {
+            S service = (S) services.get(serviceClass);
+            if (service == null) {
+                service = doLoad(serviceClass);
+                services.put(serviceClass, service);
+            }
+            return service;
+        }
     }
 
     private static <S extends Service> S doLoad(Class<S> serviceClass) {
