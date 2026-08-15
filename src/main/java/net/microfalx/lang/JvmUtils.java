@@ -8,10 +8,7 @@ import java.lang.ref.SoftReference;
 import java.net.*;
 import java.nio.file.Files;
 import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.Locale;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
@@ -209,6 +206,27 @@ public class JvmUtils {
     }
 
     /**
+     * Returns the Maven target directory if available.
+     * <p>
+     * The method presumes the working directory is the root of a Maven project and looks for a "target" directory.
+     * If the target directory does not exist, it returns an empty optional.
+     * <p>
+     * This method is mostly used during development and testing, when the application is run from the IDE
+     * or Maven command line.
+     *
+     * @return a non-null optional
+     */
+    public static Optional<File> getMavenTargetDirectory() {
+        File workingDirectory = getWorkingDirectory();
+        File targetDirectory = new File(workingDirectory, "target");
+        if (targetDirectory.exists() && targetDirectory.isDirectory()) {
+            return Optional.of(targetDirectory);
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    /**
      * Returns whether the logs directory was available at runtime.
      *
      * @return {@code true} if the logs directory really exists, {@code false} otherwise
@@ -236,6 +254,16 @@ public class JvmUtils {
         }
         logsDirectory = directory;
         return directory;
+    }
+
+    /**
+     * Changes the logs directory for current JVM.
+     *
+     * @param directory the new logs directory
+     */
+    public static void setLogsDirectory(File directory) {
+        logsDirectory = validateDirectoryExists(directory);
+        logsDirectoryExist = true;
     }
 
     /**
