@@ -3,6 +3,7 @@ package net.microfalx.lang;
 import com.google.common.base.MoreObjects;
 import net.microfalx.lang.annotation.Id;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 import static net.microfalx.lang.ArgumentUtils.requireNonNull;
@@ -13,7 +14,7 @@ import static net.microfalx.lang.ArgumentUtils.requireNotEmpty;
  *
  * @param <T> the type of the identity
  */
-public abstract class IdentityAware<T> implements Identifiable<T>, Cloneable {
+public abstract class IdentityAware<T> implements Identifiable<T>, Cloneable, Serializable {
 
     @Id
     private T id;
