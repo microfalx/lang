@@ -22,6 +22,9 @@ class ServiceStatistics<S extends Service> implements Service.Statistics<S> {
     private final S service;
 
     private final AtomicLong memoryUsage = new AtomicLong();
+    private final AtomicInteger memoryObjects = new AtomicInteger();
+    private final AtomicLong memoryArrayUsage = new AtomicLong();
+    private final AtomicInteger memoryArrayObjects = new AtomicInteger();
     private final AtomicInteger warningCount = new AtomicInteger();
     private final AtomicInteger errorCount = new AtomicInteger();
     private final AtomicInteger successCount = new AtomicInteger();
@@ -65,6 +68,21 @@ class ServiceStatistics<S extends Service> implements Service.Statistics<S> {
     @Override
     public long getMemoryUsage() {
         return memoryUsage.get();
+    }
+
+    @Override
+    public int getMemoryObjects() {
+        return memoryObjects.get();
+    }
+
+    @Override
+    public long getMemoryArrayUsage() {
+        return memoryArrayUsage.get();
+    }
+
+    @Override
+    public int getMemoryArrayObjects() {
+        return memoryArrayObjects.get();
     }
 
     @Override
@@ -116,7 +134,7 @@ class ServiceStatistics<S extends Service> implements Service.Statistics<S> {
      * Applies an event reported by the service to the metrics changed by such an event.
      *
      * @param metric the event
-     * @param value the value carried by the event
+     * @param value  the value carried by the event
      */
     void apply(Service.Metric metric, long value) {
         requireNonNull(metric);
@@ -143,7 +161,11 @@ class ServiceStatistics<S extends Service> implements Service.Statistics<S> {
             case THREAD_STARTED -> increment(threadCount, value);
             case THREAD_STOPPED -> increment(threadCount, -value);
             case MEMORY_USAGE -> memoryUsage.set(Math.max(0, value));
+            case MEMORY_OBJECTS -> memoryObjects.set(Math.max(0, (int) value));
+            case MEMORY_ARRAY_USAGE -> memoryArrayUsage.set(Math.max(0, value));
+            case MEMORY_ARRAY_OBJECTS -> memoryArrayObjects.set(Math.max(0, (int) value));
             case THREAD_COUNT -> threadCount.set((int) Math.max(0, value));
+            default -> throw new IllegalArgumentException("Unknown metric " + metric);
         }
     }
 

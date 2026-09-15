@@ -130,6 +130,25 @@ public class ExceptionUtils {
     }
 
     /**
+     * Returns whether the exception or any of its causes is of the given type.
+     *
+     * @param throwable      the throwable
+     * @param exceptionClasses the exception classes
+     * @return {@code true} if the exception or any of its causes is of the given type, {@code false} otherwise
+     */
+    @SafeVarargs
+    public static boolean contains(Throwable throwable, Class<? extends Throwable>... exceptionClasses) {
+        if (throwable == null || exceptionClasses == null) return false;
+        List<Throwable> throwableList = org.apache.commons.lang3.exception.ExceptionUtils.getThrowableList(throwable);
+        for (Throwable childThrowable : throwableList) {
+            for (Class<? extends Throwable> exceptionClass : exceptionClasses) {
+                if (ClassUtils.isSubClassOf(childThrowable, exceptionClass)) return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Returns a label our of the root cause exception, mainly used to track the exception as a counter.
      *
      * @param throwable the throwable

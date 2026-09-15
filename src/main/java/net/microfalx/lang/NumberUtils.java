@@ -231,4 +231,26 @@ public class NumberUtils {
         double pow = Math.pow(10, precision);
         return value * pow >= 1;
     }
+
+    /**
+     * Adds the value to the original value if it is positive, otherwise returns the original value.
+     *
+     * @param value the original value
+     * @param toAdd the value to add
+     * @return the sum if the value to add is positive, otherwise the original value
+     */
+    public static int addIfPositive(int value, int toAdd) {
+        return toAdd > 0 ? value + toAdd : value;
+    }
+
+    /**
+     * Adds the value to the original value if it is positive, otherwise returns the original value.
+     *
+     * @param value the original value
+     * @param toAdd the value to add
+     * @return the sum if the value to add is positive, otherwise the original value
+     */
+    public static long addIfPositive(long value, long toAdd) {
+        return toAdd > 0 ? value + toAdd : value;
+    }
 }
