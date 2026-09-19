@@ -30,7 +30,7 @@
     <parent>
         <groupId>net.microfalx</groupId>
         <artifactId>pom</artifactId>
-        <version>1.0.19</version>
+        <version>1.0.20</version>
     </parent>
 
     <name>Language Extensions</name>
@@ -65,7 +65,7 @@
 
     <properties>
         <java.version>17</java.version>
-        <bom.version>1.0.21</bom.version>
+        <bom.version>1.0.23</bom.version>
     </properties>
 
     <developers>
