@@ -1,11 +1,6 @@
 package net.microfalx.lang.service;
 
 import net.microfalx.lang.*;
-import net.microfalx.lang.annotation.Description;
-import net.microfalx.lang.annotation.Name;
-
-import static net.microfalx.lang.StringUtils.EMPTY_STRING;
-import static net.microfalx.lang.StringUtils.replaceFirst;
 
 /**
  * Base class for simple application services.
@@ -30,23 +25,12 @@ public interface Service extends Identifiable<String>, Nameable, Descriptable {
 
     @Override
     default String getName() {
-        Name nameAnnot = AnnotationUtils.getAnnotation(this, Name.class);
-        if (nameAnnot != null) {
-            return nameAnnot.value();
-        } else {
-            String name = StringUtils.beautifyCamelCase(getClass().getSimpleName());
-            return replaceFirst(name, "Impl", EMPTY_STRING);
-        }
+        return ServiceUtils.getName(this);
     }
 
     @Override
     default String getDescription() {
-        Description descriptionAnnot = AnnotationUtils.getAnnotation(this, Description.class);
-        if (descriptionAnnot != null) {
-            return descriptionAnnot.value();
-        } else {
-            return EMPTY_STRING;
-        }
+        return ServiceUtils.getDescription(this);
     }
 
     /**
@@ -96,6 +80,16 @@ public interface Service extends Identifiable<String>, Nameable, Descriptable {
      */
     static <T extends Service> T lookup(Class<T> serviceClass) {
         return ServiceLocator.lookup(serviceClass);
+    }
+
+    /**
+     * Creates a proxy for a service not managed by the service locator.
+     *
+     * @param reference the original service instance
+     * @return a proxy for the service
+     */
+    static Service proxy(Object reference) {
+        return new ServiceProxy(reference);
     }
 
     /**

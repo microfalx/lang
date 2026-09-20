@@ -28,7 +28,8 @@ public class ServiceLocator {
     private static final Logger LOGGER = Logger.get(ServiceLocator.class);
 
     private static final Map<Class<?>, Service> services = new ConcurrentHashMap<>();
-    private static final Map<Class<?>, WeakReference<Service>> serviceImplementations = new ConcurrentHashMap<>();
+    private static final Map<Class<?>, Service> serviceImplementations = new ConcurrentHashMap<>();
+    private static final Map<Class<?>, WeakReference<Service>> serviceProxies = new ConcurrentHashMap<>();
     private static final Map<Class<?>, ServiceStatistics<?>> serviceStatistics = new ConcurrentHashMap<>();
     private static final List<Service.Listener> listeners = new CopyOnWriteArrayList<>();
     private static final AtomicBoolean initialized = new AtomicBoolean(false);
@@ -96,7 +97,17 @@ public class ServiceLocator {
      * @return a non-null instance
      */
     public static Collection<Service> getServices() {
-        return serviceImplementations.values().stream().map(Reference::get)
+        return serviceImplementations.values().stream()
+                .filter(Objects::nonNull).toList();
+    }
+
+    /**
+     * Returns a collection of external services.
+     *
+     * @return a non-null instance
+     */
+    public static Collection<Service> getServiceProxies() {
+        return serviceProxies.values().stream().map(Reference::get)
                 .filter(Objects::nonNull).toList();
     }
 
@@ -131,7 +142,12 @@ public class ServiceLocator {
                 services.put(service.getClass(), service);
             }
             initialize(service, (Class<S>) service.getClass());
-            serviceImplementations.put(service.getClass(), new WeakReference<>(service));
+            if (service instanceof ServiceProxy) {
+                Class<?> serviceClass = getRealServiceClass(service);
+                serviceProxies.put(serviceClass, new WeakReference<>(service));
+            } else {
+                serviceImplementations.put(service.getClass(), service);
+            }
             serviceStatistics.computeIfPresent(service.getClass(),
                     (cls, statistics) -> statistics.getService() == service ? statistics : null);
         }
@@ -433,6 +449,8 @@ public class ServiceLocator {
             throw new ServiceException("The service " + ClassUtils.getName(service) + " is not a subclass of "
                     + ClassUtils.getName(serviceClass));
         }
+        // we do not initialize external services (like Spring beans) as they are initialized by the framework
+        if (service instanceof ServiceProxy) return;
         if (service instanceof Initializable) ((Initializable) service).initialize();
         startService(service);
         notifyStarted(service);

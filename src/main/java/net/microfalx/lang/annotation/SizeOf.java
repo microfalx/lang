@@ -35,4 +35,10 @@ public @interface SizeOf {
      * @return positive integer if it can be approximated, -1 if it cannot be approximated
      */
     int deepSize() default -1;
+
+    /**
+     * A round number which indicates that the size of the object cannot be estimated and should be
+     * treated as a large object.
+     */
+    int UNESTIMATED_SIZE = 10_000;
 }

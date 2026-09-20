@@ -9,13 +9,23 @@ class ServiceProxy implements Service, Service.Lifecycle {
 
     private final Object service;
 
-    public ServiceProxy(Object service) {
+    ServiceProxy(Object service) {
         requireNonNull(service);
         this.service = service;
     }
 
     public Object getService() {
         return service;
+    }
+
+    @Override
+    public String getName() {
+        return ServiceUtils.getName(service);
+    }
+
+    @Override
+    public String getDescription() {
+        return ServiceUtils.getDescription(service);
     }
 
     @Override
