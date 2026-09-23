@@ -1,6 +1,5 @@
 package net.microfalx.lang.convert;
 
-import com.google.gson.Gson;
 import jodd.time.TimeUtil;
 import jodd.typeconverter.TypeConversionException;
 import jodd.typeconverter.TypeConverter;
@@ -32,7 +31,6 @@ class DefaultConverters {
     static final TypeConverterManager TYPE_CONVERTER_MANAGER = TypeConverterManager.get();
 
     private static final Set<Class<?>> SIMPLE_TYPES = new CopyOnWriteArraySet<>();
-    private static Gson gson;
 
     /**
      * Converts an object to a target type.
@@ -198,7 +196,7 @@ class DefaultConverters {
                 return convertJdk(value);
             } else {
                 try {
-                    return Types.getConverter().asString(value);
+                    return Types.getJsonConverter().asString(value);
                 } catch (Exception e) {
                     return throwConversionException(value, String.class, e);
                 }
@@ -217,7 +215,7 @@ class DefaultConverters {
             } else if (value instanceof String valueAsString) {
                 if (valueAsString.isEmpty()) return Collections.emptyMap();
                 try {
-                    return Types.getConverter().asMap(valueAsString);
+                    return Types.getJsonConverter().asMap(valueAsString);
                 } catch (IOException e) {
                     throw new TypeConversionException("Failed to decode JSON", e);
                 }
@@ -238,7 +236,7 @@ class DefaultConverters {
             } else if (value instanceof String valueAsString) {
                 if (valueAsString.isEmpty()) return Collections.emptyList();
                 try {
-                    return Types.getConverter().asCollection(valueAsString);
+                    return Types.getJsonConverter().asCollection(valueAsString);
                 } catch (IOException e) {
                     throw new TypeConversionException("Failed to decode JSON", e);
                 }
@@ -259,7 +257,7 @@ class DefaultConverters {
             } else if (value instanceof String valueAsString) {
                 if (valueAsString.isEmpty()) return Collections.emptySet();
                 try {
-                    return Types.getConverter().asSet(valueAsString);
+                    return Types.getJsonConverter().asSet(valueAsString);
                 } catch (IOException e) {
                     throw new TypeConversionException("Failed to decode JSON", e);
                 }
@@ -322,7 +320,7 @@ class DefaultConverters {
     }
 
     static JsonConverter getConverter() {
-        return Types.getConverter();
+        return Types.getJsonConverter();
     }
 
     static {

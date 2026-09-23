@@ -1,12 +1,7 @@
 package net.microfalx.lang.convert;
 
-import com.google.common.reflect.TypeToken;
-import net.microfalx.lang.ObjectUtils;
-
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 

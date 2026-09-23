@@ -1,19 +1,48 @@
 package net.microfalx.lang.convert;
 
+import net.microfalx.lang.Initializable;
+
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
+import static net.microfalx.lang.ArgumentUtils.requireNonNull;
+
 /**
  * A facade for data type conversions.
  * <p>
- * The string representation of a collection or map or a complex object is expected to be in JSON format. JSON content
- * can be provided as a String, Reader, File, InputStream or Resource.
+ * The string representation of a collection or map or a complex object is expected to be in JSON format.
+ * JSON content  can be provided as a String, Reader, File, InputStream or Resource.
  */
 public class Types {
 
+    private static volatile JsonConverter jsonConverter;
+
     private Types() {
+    }
+
+    /**
+     * Returns the JSON converter.
+     *
+     * @return a non-null instance
+     */
+    public static JsonConverter getJsonConverter() {
+        return jsonConverter;
+    }
+
+    /**
+     * Changes the JSON converter.
+     *
+     * @param converter the new converter
+     */
+    public static void setJsonConverter(JsonConverter converter) {
+        requireNonNull(converter);
+        Types.jsonConverter = converter;
+        if (converter instanceof Initializable) {
+            ((Initializable) converter).initialize();
+        }
+        Types.jsonConverter = converter;
     }
 
     /**
@@ -49,7 +78,7 @@ public class Types {
      */
     public static Collection<?> asCollection(Object value) {
         try {
-            return getConverter().asCollection(value);
+            return getJsonConverter().asCollection(value);
         } catch (IOException e) {
             throw new ConversionException("Failed to convert value to collection", e);
         }
@@ -65,7 +94,7 @@ public class Types {
      */
     public static <T> Collection<T> asCollection(Object value, Class<T> elementType) {
         try {
-            return getConverter().asCollection(value, elementType);
+            return getJsonConverter().asCollection(value, elementType);
         } catch (IOException e) {
             throw new ConversionException("Failed to convert value to collection of " + elementType.getName(), e);
         }
@@ -79,7 +108,7 @@ public class Types {
      */
     public static Set<?> asSet(Object value) {
         try {
-            return getConverter().asSet(value);
+            return getJsonConverter().asSet(value);
         } catch (IOException e) {
             throw new ConversionException("Failed to convert value to collection", e);
         }
@@ -95,7 +124,7 @@ public class Types {
      */
     public static <T> Set<T> asSet(Object value, Class<T> elementType) {
         try {
-            return getConverter().asSet(value, elementType);
+            return getJsonConverter().asSet(value, elementType);
         } catch (IOException e) {
             throw new ConversionException("Failed to convert value to collection of " + elementType.getName(), e);
         }
@@ -109,7 +138,7 @@ public class Types {
      */
     public static <T> Map<String, T> asMap(Object value) {
         try {
-            return getConverter().asMap(value);
+            return getJsonConverter().asMap(value);
         } catch (IOException e) {
             throw new ConversionException("Failed to convert value to collection", e);
         }
@@ -125,19 +154,13 @@ public class Types {
      */
     public static <T> T asObject(Object value, Class<T> elementType) {
         try {
-            return getConverter().asObject(value, elementType);
+            return getJsonConverter().asObject(value, elementType);
         } catch (IOException e) {
             throw new ConversionException("Failed to convert value to object of " + elementType.getName(), e);
         }
     }
 
-    static JsonConverter getConverter() {
-        if (converter == null) {
-            converter = ConverterService.getInstance().getJsonConverter();
-        }
-        return converter;
+    static {
+        setJsonConverter(new GsonConverter());
     }
-
-    static volatile JsonConverter converter;
-
 }
