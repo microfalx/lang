@@ -2,6 +2,8 @@ package net.microfalx.lang.convert;
 
 import com.google.common.reflect.TypeToken;
 import com.google.gson.*;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import net.microfalx.lang.IOUtils;
 import net.microfalx.lang.Initializable;
 import net.microfalx.lang.ObjectUtils;
@@ -10,7 +12,8 @@ import java.io.*;
 import java.lang.reflect.Array;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
-import java.time.Duration;
+import java.time.*;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import static net.microfalx.lang.ArgumentUtils.requireNonNull;
@@ -125,10 +128,16 @@ public class GsonConverter implements JsonConverter, Initializable {
     @Override
     public void initialize(Object... context) {
         GsonBuilder builder = new GsonBuilder();
-        builder.setStrictness(Strictness.LENIENT).
-                setPrettyPrinting()
+        builder.setStrictness(Strictness.LENIENT)
+                .setPrettyPrinting()
                 .setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
-                .registerTypeAdapter(Duration.class, new DurationTypeAdapter());
+                .registerTypeAdapter(Duration.class, new DurationTypeAdapter())
+                .registerTypeAdapter(Instant.class, new InstantTypeAdapter())
+                .registerTypeAdapter(LocalDate.class, new LocalDateTypeAdapter())
+                .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeTypeAdapter())
+                .registerTypeAdapter(ZonedDateTime.class, new ZonedDateTimeTypeAdapter())
+                .registerTypeAdapter(OffsetDateTime.class, new OffsetDateTimeTypeAdapter())
+                .registerTypeAdapter(Instant.class, new InstantTypeAdapter());
         gson = builder.create();
     }
 
@@ -171,6 +180,144 @@ public class GsonConverter implements JsonConverter, Initializable {
                                     JsonDeserializationContext context)
                 throws JsonParseException {
             return Duration.parse(json.getAsString());
+        }
+    }
+
+    private static class LocalDateTimeAdapter extends TypeAdapter<LocalDateTime> {
+
+        private static final DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+
+        @Override
+        public void write(JsonWriter out, LocalDateTime value) throws IOException {
+            if (value == null) {
+                out.nullValue();
+            } else {
+                out.value(formatter.format(value));
+            }
+        }
+
+        @Override
+        public LocalDateTime read(JsonReader in) throws IOException {
+            if (in.peek() == com.google.gson.stream.JsonToken.NULL) {
+                in.nextNull();
+                return null;
+            }
+            return LocalDateTime.parse(in.nextString(), formatter);
+        }
+    }
+
+    private static class LocalDateTypeAdapter extends TypeAdapter<LocalDate> {
+
+        private static final DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE;
+
+        @Override
+        public void write(JsonWriter out, LocalDate value) throws IOException {
+            if (value == null) {
+                out.nullValue();
+            } else {
+                out.value(formatter.format(value));
+            }
+        }
+
+        @Override
+        public LocalDate read(JsonReader in) throws IOException {
+            if (in.peek() == com.google.gson.stream.JsonToken.NULL) {
+                in.nextNull();
+                return null;
+            }
+            return LocalDate.parse(in.nextString(), formatter);
+        }
+    }
+
+    private static class LocalDateTimeTypeAdapter extends TypeAdapter<LocalDateTime> {
+
+        private static final DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+
+        @Override
+        public void write(JsonWriter out, LocalDateTime value) throws IOException {
+            if (value == null) {
+                out.nullValue();
+            } else {
+                out.value(formatter.format(value));
+            }
+        }
+
+        @Override
+        public LocalDateTime read(JsonReader in) throws IOException {
+            if (in.peek() == com.google.gson.stream.JsonToken.NULL) {
+                in.nextNull();
+                return null;
+            }
+            return LocalDateTime.parse(in.nextString(), formatter);
+        }
+    }
+
+    private static class ZonedDateTimeTypeAdapter extends TypeAdapter<ZonedDateTime> {
+
+        private static final DateTimeFormatter formatter = DateTimeFormatter.ISO_ZONED_DATE_TIME;
+
+        @Override
+        public void write(JsonWriter out, ZonedDateTime value) throws IOException {
+            if (value == null) {
+                out.nullValue();
+            } else {
+                out.value(formatter.format(value));
+            }
+        }
+
+        @Override
+        public ZonedDateTime read(JsonReader in) throws IOException {
+            if (in.peek() == com.google.gson.stream.JsonToken.NULL) {
+                in.nextNull();
+                return null;
+            }
+            return ZonedDateTime.parse(in.nextString(), formatter);
+        }
+    }
+
+    private static class OffsetDateTimeTypeAdapter extends TypeAdapter<OffsetDateTime> {
+
+        private static final DateTimeFormatter formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
+
+        @Override
+        public void write(JsonWriter out, OffsetDateTime value) throws IOException {
+            if (value == null) {
+                out.nullValue();
+            } else {
+                out.value(formatter.format(value));
+            }
+        }
+
+        @Override
+        public OffsetDateTime read(JsonReader in) throws IOException {
+            if (in.peek() == com.google.gson.stream.JsonToken.NULL) {
+                in.nextNull();
+                return null;
+            }
+            return OffsetDateTime.parse(in.nextString(), formatter);
+        }
+    }
+
+    private static class InstantTypeAdapter extends TypeAdapter<Instant> {
+
+        private static final DateTimeFormatter formatter = DateTimeFormatter.ISO_INSTANT;
+
+        @Override
+        public void write(JsonWriter out, Instant value) throws IOException {
+            if (value == null) {
+                out.nullValue();
+            } else {
+                out.value(formatter.format(value));
+            }
+        }
+
+        @Override
+        public Instant read(JsonReader in) throws IOException {
+            if (in.peek() == com.google.gson.stream.JsonToken.NULL) {
+                in.nextNull();
+                return null;
+            }
+            return formatter.parse(in.nextString(), Instant::from);
         }
     }
 }
