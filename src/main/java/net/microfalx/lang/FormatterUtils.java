@@ -112,10 +112,19 @@ public class FormatterUtils {
      */
     public static String formatElapsed(Object value, ZoneId timeZone, boolean rounded) {
         if (timeZone == null) timeZone = ZoneId.systemDefault();
-        ZonedDateTime zonedDateTime = toZonedDateTime(value);
-        if (zonedDateTime == null) return "just now";
-        zonedDateTime = zonedDateTime.withZoneSameInstant(timeZone);
-        Duration duration = Duration.between(zonedDateTime, ZonedDateTime.now());
+        Duration duration;
+        if (value instanceof Duration) {
+            duration = (Duration) value;
+        } else if (value instanceof Number number) {
+            duration = Duration.ofMillis(number.longValue());
+        } else if (value instanceof String) {
+            return (String) value;
+        } else {
+            ZonedDateTime zonedDateTime = toZonedDateTime(value);
+            if (zonedDateTime == null) return "just now";
+            zonedDateTime = zonedDateTime.withZoneSameInstant(timeZone);
+            duration = Duration.between(zonedDateTime, ZonedDateTime.now());
+        }
         if (duration.isNegative() || (rounded && duration.toMillis() < ONE_MINUTE)) {
             return "just now";
         } else {
