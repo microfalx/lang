@@ -1,5 +1,6 @@
 package net.microfalx.lang;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.google.common.base.MoreObjects;
 import net.microfalx.lang.annotation.Name;
 
@@ -14,7 +15,9 @@ import static net.microfalx.lang.StringUtils.*;
 public abstract class NamedIdentityAware<T> extends IdentityAware<T> implements Nameable, Descriptable {
 
     @Name
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private String name;
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private String description;
 
     @Override

@@ -1,5 +1,6 @@
 package net.microfalx.lang;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.google.common.base.MoreObjects;
 import net.microfalx.lang.annotation.Id;
 
@@ -17,6 +18,7 @@ import static net.microfalx.lang.ArgumentUtils.requireNotEmpty;
 public abstract class IdentityAware<T> implements Identifiable<T>, Cloneable, Serializable {
 
     @Id
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private T id;
 
     @Override
