@@ -237,8 +237,6 @@ public class Version extends IdentityAware<String> implements Comparable<Version
             }
             patch = parseNumber(patchString);
         }
-        if (major < 0) throw new IllegalArgumentException("Invalid version, major version is negative: " + value);
-        if (minor < 0) throw new IllegalArgumentException("Invalid version, minor version is negative: " + value);
     }
 
     private int parseNumber(String value) {

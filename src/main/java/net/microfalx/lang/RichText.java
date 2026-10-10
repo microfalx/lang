@@ -432,6 +432,127 @@ public final class RichText {
     }
 
     /**
+     * Appends a glyph followed by a space, with the current colors and styles.
+     *
+     * @param glyph the glyph, usually one of the constants in {@link Glyph}
+     * @return self
+     */
+    public RichText glyph(String glyph) {
+        requireNonNull(glyph);
+        return a(glyph + StringUtils.SPACE);
+    }
+
+    /**
+     * Appends a check mark ({@link Glyph#CHECK_HEAVY}) followed by a space.
+     *
+     * @return self
+     */
+    public RichText check() {
+        return glyph(Glyph.CHECK_HEAVY);
+    }
+
+    /**
+     * Appends a cross mark ({@link Glyph#CROSS_HEAVY}) followed by a space.
+     *
+     * @return self
+     */
+    public RichText cross() {
+        return glyph(Glyph.CROSS_HEAVY);
+    }
+
+    /**
+     * Appends a bullet ({@link Glyph#BULLET}) followed by a space.
+     *
+     * @return self
+     */
+    public RichText bullet() {
+        return glyph(Glyph.BULLET);
+    }
+
+    /**
+     * Appends a small square ({@link Glyph#SMALL_SQUARE}) followed by a space.
+     *
+     * @return self
+     */
+    public RichText square() {
+        return glyph(Glyph.SMALL_SQUARE);
+    }
+
+    /**
+     * Appends a triangular bullet ({@link Glyph#TRIANGULAR_BULLET}) followed by a space.
+     *
+     * @return self
+     */
+    public RichText triangle() {
+        return glyph(Glyph.TRIANGULAR_BULLET);
+    }
+
+    /**
+     * Appends a right arrow ({@link Glyph#ARROW_RIGHT}) followed by a space.
+     *
+     * @return self
+     */
+    public RichText rightArrow() {
+        return glyph(Glyph.ARROW_RIGHT);
+    }
+
+    /**
+     * Appends a left arrow ({@link Glyph#ARROW_LEFT}) followed by a space.
+     *
+     * @return self
+     */
+    public RichText leftArrow() {
+        return glyph(Glyph.ARROW_LEFT);
+    }
+
+    /**
+     * Appends a warning sign ({@link Glyph#WARNING}) followed by a space.
+     *
+     * @return self
+     */
+    public RichText warning() {
+        return glyph(Glyph.WARNING);
+    }
+
+    /**
+     * Appends an information sign ({@link Glyph#INFO}) followed by a space.
+     *
+     * @return self
+     */
+    public RichText info() {
+        return glyph(Glyph.INFO);
+    }
+
+    /**
+     * Appends a tree branch ({@code ├─ }), used for a node which is followed by siblings.
+     *
+     * @return self
+     */
+    public RichText branch() {
+        return a(Glyph.TREE_BRANCH + Glyph.TREE_HORIZONTAL + StringUtils.SPACE);
+    }
+
+    /**
+     * Appends the last tree branch ({@code └─ }), used for the last node among its siblings.
+     *
+     * @return self
+     */
+    public RichText lastBranch() {
+        return a(Glyph.TREE_LAST + Glyph.TREE_HORIZONTAL + StringUtils.SPACE);
+    }
+
+    /**
+     * Appends a tree trunk ({@code │  }), used to indent the children of a node which is followed by siblings.
+     * <p>
+     * The children of the last node are indented with 3 spaces instead.
+     *
+     * @return self
+     */
+    public RichText trunk() {
+        return a(Glyph.TREE_VERTICAL + StringUtils.SPACE + StringUtils.SPACE);
+    }
+
+    /**
      * Returns whether there is no text.
      *
      * @return {@code true} if empty, {@code false} otherwise

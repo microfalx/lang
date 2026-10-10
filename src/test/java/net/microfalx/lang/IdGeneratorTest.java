@@ -16,7 +16,7 @@ class IdGeneratorTest {
     void next() {
         for (int i = 0; i < 1000000; i++) {
             long next = IdGenerator.get().next();
-            assertTrue(ids.add(next));
+            assertTrue(ids.add(next), "Failed after " + i + " iterations, duplicate id: " + next);
         }
     }
 

@@ -20,7 +20,7 @@ class LoggerTest {
         logger.increaseIndent().info("test indented");
         logger.decreaseIndent().info("test");
         assertEquals("test\n" +
-                "   test indented\n" +
+                "  test indented\n" +
                 "test", logger.getOutput());
     }
 
@@ -29,7 +29,7 @@ class LoggerTest {
         Logger logger = Logger.createList("Test").attach();
         Logger.current().info("1");
         assertEquals("Test\n" +
-                "       - 1", logger.getOutput());
+                "  • 1", logger.getOutput());
     }
 
 
@@ -49,7 +49,7 @@ class LoggerTest {
         logger.decreaseIndent();
         logger.info("info 3");
         assertEquals("info\n" +
-                "   info 2\n" +
+                "  info 2\n" +
                 "info 3", logger.getOutput());
     }
 
@@ -153,7 +153,7 @@ class LoggerTest {
         logger.atError().triangle().append("Third").log();
         assertEquals("• First\n" +
                 "→ Second\n" +
-                "⚠ Third", logger.getOutput());
+                "‣ Third", logger.getOutput());
     }
 
 

@@ -77,6 +77,12 @@ public class FormatterUtils {
             return ((LocalTime) value).format(timeFormatter);
         } else if (value instanceof OffsetTime) {
             return ((OffsetTime) value).format(timeFormatter);
+        } else if (value instanceof LocalDateTime) {
+            return ((LocalDateTime) value).format(timeFormatter);
+        } else if (value instanceof ZonedDateTime) {
+            return ((ZonedDateTime) value).format(timeFormatter);
+        } else if (value instanceof OffsetDateTime) {
+            return ((OffsetDateTime) value).format(timeFormatter);
         } else {
             return value.toString();
         }

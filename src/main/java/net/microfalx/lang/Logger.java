@@ -27,13 +27,13 @@ public final class Logger implements Identifiable<String>, Nameable, Descriptabl
 
     private static final long serialVersionUID = 3775117519553206152L;
 
-    public static final int SMALL_INDENT = 2;
-    public static final int MEDIUM_INDENT = 5;
-    public static final int LARGE_INDENT = 10;
+    public static final int SMALL_INDENT = 1;
+    public static final int MEDIUM_INDENT = 2;
+    public static final int LARGE_INDENT = 3;
     public static final int MEMORY_MAX_SIZE = 5_000_000;
     private static final DateTimeFormatter LOG_TIME_FORMATTER = DateTimeFormatter.ofPattern("hh:mm:ss ");
 
-    private static final int INDENT_STEPS = 3;
+    private static final int INDENT_STEPS = 2;
 
     private final StringBuilder buffer = new StringBuilder();
     private transient volatile byte[] bufferCompressed;
@@ -899,7 +899,7 @@ public final class Logger implements Identifiable<String>, Nameable, Descriptabl
             }
             if (this.severity) doAppend(severity.name()).doAppend(" ");
             doAppend(getIndentation());
-            if (includeBullet) doAppend(Glyph.BULLET);
+            if (includeBullet) doAppend(Glyph.BULLET).doAppend(" ");
             if (throwable != null) message += ", with failure: " + getRootCauseDescription(throwable);
             doAppend(message, true);
         }
@@ -944,7 +944,7 @@ public final class Logger implements Identifiable<String>, Nameable, Descriptabl
     }
 
     private String getIndentation() {
-        return StringUtils.getStringOfChar(' ', getIndentationSpaces());
+        return getStringOfChar(' ', getIndentationSpaces());
     }
 
     private int getIndentationSpaces() {
@@ -976,126 +976,6 @@ public final class Logger implements Identifiable<String>, Nameable, Descriptabl
             parent = parent.parent;
         }
         return depth;
-    }
-
-    public static class Glyph {
-
-        private Glyph() {
-        }
-
-        // ----------------------------------------------------
-        // BULLETS / LIST MARKERS
-        // ----------------------------------------------------
-
-        public static final String BULLET = "•";
-        public static final String TRIANGULAR_BULLET = "‣";
-        public static final String WHITE_BULLET = "◦";
-        public static final String LARGE_CIRCLE = "○";
-        public static final String LARGE_BLACK_CIRCLE = "●";
-        public static final String SMALL_SQUARE = "▪";
-        public static final String WHITE_SMALL_SQUARE = "▫";
-        public static final String TRIANGLE_RIGHT = "▶";
-
-        // ----------------------------------------------------
-        // SUCCESS / FAILURE
-        // ----------------------------------------------------
-
-        public static final String CHECK = "✓";
-        public static final String CHECK_HEAVY = "✔";
-        public static final String CROSS = "✗";
-        public static final String CROSS_HEAVY = "✖";
-        public static final String CROSS_MARK = "❌";
-        public static final String BALLOT_CHECK = "☑";
-        public static final String BALLOT_X = "☒";
-
-        // ----------------------------------------------------
-        // WARNING / INFO / ALERT
-        // ----------------------------------------------------
-
-        public static final String WARNING = "⚠";
-        public static final String INFO = "ℹ";
-        public static final String QUESTION = "❓";
-        public static final String EXCLAMATION = "❗";
-        public static final String ALARM = "🚨";
-
-        // ----------------------------------------------------
-        // ARROWS / FLOW
-        // ----------------------------------------------------
-
-        public static final String ARROW_RIGHT = "→";
-        public static final String ARROW_LEFT = "←";
-        public static final String ARROW_UP = "↑";
-        public static final String ARROW_DOWN = "↓";
-        public static final String DOUBLE_ARROW_RIGHT = "⇒";
-        public static final String HEAVY_ARROW_RIGHT = "➜";
-        public static final String LONG_ARROW_RIGHT = "⮕";
-
-        // ----------------------------------------------------
-        // FLAGS / MARKERS
-        // ----------------------------------------------------
-
-        public static final String FLAG = "⚑";
-        public static final String TRIANGULAR_FLAG = "🚩";
-        public static final String LOCATION = "📍";
-
-        // ----------------------------------------------------
-        // SYSTEM / DEVOPS
-        // ----------------------------------------------------
-
-        public static final String GEAR = "⚙";
-        public static final String HAMMER = "🔨";
-        public static final String TOOLBOX = "🧰";
-        public static final String PACKAGE = "📦";
-        public static final String LINK = "🔗";
-        public static final String LOCK = "🔒";
-        public static final String UNLOCK = "🔓";
-        public static final String KEY = "🔑";
-
-        // ----------------------------------------------------
-        // FILES / STORAGE
-        // ----------------------------------------------------
-
-        public static final String FILE = "📄";
-        public static final String FOLDER = "📁";
-        public static final String OPEN_FOLDER = "📂";
-        public static final String DATABASE = "🗄";
-        public static final String FLOPPY = "💾";
-
-        // ----------------------------------------------------
-        // NETWORK / CLOUD
-        // ----------------------------------------------------
-
-        public static final String CLOUD = "☁";
-        public static final String NETWORK = "🌐";
-        public static final String SATELLITE = "📡";
-        public static final String WIFI = "📶";
-
-        // ----------------------------------------------------
-        // TIME / PERFORMANCE
-        // ----------------------------------------------------
-
-        public static final String CLOCK = "⏱";
-        public static final String STOPWATCH = "⏲";
-        public static final String HOURGLASS = "⏳";
-        public static final String FAST = "⚡";
-
-        // ----------------------------------------------------
-        // PROGRESS / STATUS
-        // ----------------------------------------------------
-
-        public static final String START = "▶";
-        public static final String STOP = "⏹";
-        public static final String PAUSE = "⏸";
-        public static final String RECORD = "⏺";
-
-        // ----------------------------------------------------
-        // DEBUG / DIAGNOSTICS
-        // ----------------------------------------------------
-
-        public static final String BUG = "🐞";
-        public static final String MICROSCOPE = "🔬";
-        public static final String MAGNIFIER = "🔍";
-        public static final String MAGNIFIER_RIGHT = "🔎";
     }
 
     /**
@@ -1143,7 +1023,7 @@ public final class Logger implements Identifiable<String>, Nameable, Descriptabl
         }
 
         public Entry cross() {
-            append(Glyph.CROSS_MARK).append(SPACE_CHAR);
+            append(Glyph.CROSS_HEAVY).append(SPACE_CHAR);
             return this;
         }
 
@@ -1169,6 +1049,37 @@ public final class Logger implements Identifiable<String>, Nameable, Descriptabl
 
         public Entry leftArrow() {
             append(Glyph.ARROW_LEFT).append(SPACE_CHAR);
+            return this;
+        }
+
+        public Entry warning() {
+            append(Glyph.WARNING).append(SPACE_CHAR);
+            return this;
+        }
+
+        public Entry info() {
+            append(Glyph.INFO).append(SPACE_CHAR);
+            return this;
+        }
+
+        public Entry branch() {
+            append(Glyph.TREE_BRANCH).append(Glyph.TREE_HORIZONTAL).append(SPACE_CHAR);
+            return this;
+        }
+
+        public Entry lastBranch() {
+            append(Glyph.TREE_LAST).append(Glyph.TREE_HORIZONTAL).append(SPACE_CHAR);
+            return this;
+        }
+
+        public Entry trunk() {
+            append(Glyph.TREE_VERTICAL).append(SPACE_CHAR).append(SPACE_CHAR);
+            return this;
+        }
+
+        public Entry glyph(String glyph) {
+            requireNonNull(glyph);
+            append(glyph).append(SPACE_CHAR);
             return this;
         }
 

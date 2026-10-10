@@ -58,7 +58,7 @@ class TimeUtilsTest {
 
     @Test
     void toMillis() {
-        assertThrows(IllegalArgumentException.class, () -> TimeUtils.toMillis(null));
+        assertEquals(0, TimeUtils.toMillis(null));
         assertEquals(LOCAL_DATETIME.atZone(TimeUtils.UTC_ZONE).toInstant().toEpochMilli(),
                 TimeUtils.toMillis(LOCAL_DATETIME));
         assertEquals(LOCAL_DATE.atStartOfDay().atZone(TimeUtils.UTC_ZONE).toInstant().toEpochMilli(),

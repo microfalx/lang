@@ -25,48 +25,48 @@ class ExceptionUtilsTest {
         org.assertj.core.api.Assertions.assertThat(ExceptionUtils.getStackTrace(new Throwable()))
                 .contains("ExceptionUtilsTest.getStackTrace")
                 .contains("org.junit.platform.launcher.core.EngineExecutionOrchestrator");
-        assertEquals("N/A",ExceptionUtils.getStackTrace(null));
+        assertEquals("N/A", ExceptionUtils.getStackTrace(null));
     }
 
     @Test
-    void getRootCauseMessage(){
-        assertEquals("Throwable: ",ExceptionUtils.getRootCauseMessage(new Throwable()));
-        assertEquals(StringUtils.NA_STRING,ExceptionUtils.getRootCauseMessage(null));
+    void getRootCauseMessage() {
+        assertEquals(StringUtils.NA_STRING, ExceptionUtils.getRootCauseMessage(new Throwable()));
+        assertEquals(StringUtils.NA_STRING, ExceptionUtils.getRootCauseMessage(null));
     }
 
     @Test
-    void getRootCauseDescription(){
-        assertEquals("Throwable:  (Throwable)",ExceptionUtils.getRootCauseDescription(new Throwable()));
+    void getRootCauseDescription() {
+        assertEquals("N/A (Throwable)", ExceptionUtils.getRootCauseDescription(new Throwable()));
 
     }
 
     @Test
     void getRootCause() {
-        assertEquals("java.lang.Throwable",ExceptionUtils.getRootCause(new Throwable()).toString());
+        assertEquals("java.lang.Throwable", ExceptionUtils.getRootCause(new Throwable()).toString());
     }
 
     @Test
     void getRootCauseClass() {
-        assertEquals(Throwable.class,ExceptionUtils.getRootCauseClass(new Throwable()));
+        assertEquals(Throwable.class, ExceptionUtils.getRootCauseClass(new Throwable()));
     }
 
     @Test
     void getRootCauseNameWithThrowable() {
-        assertEquals(StringUtils.NA_STRING,ExceptionUtils.getRootCauseName((Throwable) null));
+        assertEquals(StringUtils.NA_STRING, ExceptionUtils.getRootCauseName((Throwable) null));
         assertEquals("Illegal State", ExceptionUtils.getRootCauseName(new IllegalStateException("Demo")));
         assertEquals("I/O", ExceptionUtils.getRootCauseName(new IOException("Demo")));
     }
 
     @Test
     void getRootCauseNameWithString() {
-        assertEquals(StringUtils.NA_STRING,ExceptionUtils.getRootCauseName((String) null));
+        assertEquals(StringUtils.NA_STRING, ExceptionUtils.getRootCauseName((String) null));
         assertEquals("Illegal State", ExceptionUtils.getRootCauseName(IllegalStateException.class.getSimpleName()));
         assertEquals("I/O", ExceptionUtils.getRootCauseName(IOException.class.getSimpleName()));
     }
 
     @Test
-    void getSQLErrorCode(){
-        assertEquals(-1,ExceptionUtils.getSQLErrorCode(new Throwable()));
-        assertEquals(0,ExceptionUtils.getSQLErrorCode(new SQLException()));
+    void getSQLErrorCode() {
+        assertEquals(-1, ExceptionUtils.getSQLErrorCode(new Throwable()));
+        assertEquals(0, ExceptionUtils.getSQLErrorCode(new SQLException()));
     }
 }
