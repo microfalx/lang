@@ -19,6 +19,7 @@ import static net.microfalx.lang.ArgumentUtils.requireBounded;
  * @see Logger
  * @see RichText
  */
+@SuppressWarnings({"unused"})
 public final class Glyph {
 
     private static final String TEXT = "︎";
