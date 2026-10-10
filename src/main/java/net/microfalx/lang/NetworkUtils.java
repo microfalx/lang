@@ -1,8 +1,12 @@
 package net.microfalx.lang;
 
+import org.slf4j.LoggerFactory;
+
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.regex.Pattern;
+
+import static net.microfalx.lang.ExceptionUtils.getRootCauseDescription;
 
 /**
  * Various utilities for network.
@@ -80,6 +84,16 @@ public class NetworkUtils {
             } else {
                 return hostOrIp.substring(position + 1);
             }
+        }
+    }
+
+    static {
+        try {
+            anyAddress = InetAddress.getByName("0.0.0.0");
+        } catch (UnknownHostException e) {
+            LoggerFactory.getLogger(NetworkUtils.class)
+                    .error("Failed to initialize ANY address, root cause: {}", getRootCauseDescription(e));
+            anyAddress = InetAddress.getLoopbackAddress();
         }
     }
 }
