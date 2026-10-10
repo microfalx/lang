@@ -22,8 +22,8 @@ import static net.microfalx.lang.ArgumentUtils.requireBounded;
 @SuppressWarnings({"unused"})
 public final class Glyph {
 
-    private static final String TEXT = "︎";
-    private static final String EMOJI = "️";
+    private static final String TEXT = "\uFE0E";
+    private static final String EMOJI = "\uFE0F";
 
     private Glyph() {
     }
