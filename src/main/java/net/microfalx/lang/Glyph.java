@@ -7,19 +7,20 @@ import static net.microfalx.lang.ArgumentUtils.requireBounded;
  * <p>
  * Glyphs come in two flavors, and each group below documents which one it uses:
  * <ul>
- *     <li><b>text</b> glyphs take one column in a terminal and use the current text color; characters which can
- *     also be rendered as emojis are followed by the text presentation selector (U+FE0E), so they always render
- *     as text</li>
- *     <li><b>emoji</b> glyphs take two columns in a terminal and have their own colors; characters which can also
- *     be rendered as text are followed by the emoji presentation selector (U+FE0F), so they always render as
- *     emojis</li>
+ *     <li><b>text</b> glyphs take one column in a terminal and use the current text color; characters which also
+ *     have an emoji form are followed by the text presentation selector (U+FE0E), since some terminals and fonts
+ *     render them as emojis otherwise</li>
+ *     <li><b>emoji</b> glyphs take two columns in a terminal and have their own colors; characters which render
+ *     as text by default are followed by the emoji presentation selector (U+FE0F), so they render as emojis</li>
  * </ul>
+ * Characters without a selector need none: they either have a single form, or their default presentation is
+ * already the one of their group.
  * Avoid mixing the two flavors on lines which should be aligned (like a list of statuses).
  *
  * @see Logger
  * @see RichText
  */
-@SuppressWarnings({"unused"})
+@SuppressWarnings({"unused", "UnnecessaryUnicodeEscape"})
 public final class Glyph {
 
     private static final String TEXT = "\uFE0E";
