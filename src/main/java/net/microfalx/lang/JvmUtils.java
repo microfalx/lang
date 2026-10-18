@@ -7,7 +7,9 @@ import java.io.IOException;
 import java.lang.ref.SoftReference;
 import java.net.*;
 import java.nio.file.Files;
+import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
@@ -52,8 +54,28 @@ public class JvmUtils {
     private static volatile InetAddress localhost;
     private static volatile SoftReference<Collection<Jar>> CACHED_JARS = new SoftReference<>(null);
 
+    private static final ZonedDateTime STARTUP = ZonedDateTime.now();
+
     /**
-     * Returns the local of this JVM.
+     * Returns the startup time of this JVM, with timezone information.
+     *
+     * @return a non-null instance
+     */
+    public static ZonedDateTime getStartupTime() {
+        return STARTUP;
+    }
+
+    /**
+     * Returns the uptime of this JVM.
+     *
+     * @return a non-null instance
+     */
+    public static Duration getUptime() {
+        return Duration.between(STARTUP, ZonedDateTime.now());
+    }
+
+    /**
+     * Returns the local host of this JVM.
      *
      * @return a non-null instance
      */
