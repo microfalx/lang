@@ -243,6 +243,21 @@ public class ClassUtils {
     }
 
     /**
+     * Resolves the class by its name.
+     *
+     * @param className the class name
+     * @return a non-null instance if exists, null otherwise
+     * @see #exists(String)
+     */
+    public static Class<?> resolve(String className) {
+        try {
+            return Class.forName(className);
+        } catch (ClassNotFoundException | NoClassDefFoundError e) {
+            return null;
+        }
+    }
+
+    /**
      * Checks if a class exists in the class path.
      *
      * @param className the class name
