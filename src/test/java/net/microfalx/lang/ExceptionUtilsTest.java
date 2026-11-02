@@ -25,7 +25,7 @@ class ExceptionUtilsTest {
         org.assertj.core.api.Assertions.assertThat(ExceptionUtils.getStackTrace(new Throwable()))
                 .contains("ExceptionUtilsTest.getStackTrace")
                 .contains("org.junit.platform.launcher.core.EngineExecutionOrchestrator");
-        assertEquals("N/A", ExceptionUtils.getStackTrace(null));
+        assertEquals("N/A", ExceptionUtils.getStackTrace((Throwable) null));
     }
 
     @Test

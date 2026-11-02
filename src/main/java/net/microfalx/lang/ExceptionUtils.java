@@ -3,9 +3,7 @@ package net.microfalx.lang;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.Callable;
 
 import static net.microfalx.lang.ArgumentUtils.requireNonNull;
@@ -63,6 +61,34 @@ public class ExceptionUtils {
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw, true);
         throwable.printStackTrace(pw);
+        pw.close();
+        return sw.toString();
+    }
+
+    /**
+     * Dumps an exception stacktrace as a string.
+     *
+     * @param stackTraceElements an exception
+     * @return exception stacktrace, N/A if null
+     */
+    public static String getStackTrace(StackTraceElement[] stackTraceElements) {
+        if (stackTraceElements == null) return "N/A";
+        return getStackTrace(Arrays.asList(stackTraceElements));
+    }
+
+    /**
+     * Dumps an exception stacktrace as a string.
+     *
+     * @param stackTraceElements an exception
+     * @return exception stacktrace, N/A if null
+     */
+    public static String getStackTrace(Collection<StackTraceElement> stackTraceElements) {
+        if (stackTraceElements == null) return "N/A";
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw, true);
+        for (StackTraceElement element : stackTraceElements) {
+            pw.println(element.toString());
+        }
         pw.close();
         return sw.toString();
     }
@@ -132,7 +158,7 @@ public class ExceptionUtils {
     /**
      * Returns whether the exception or any of its causes is of the given type.
      *
-     * @param throwable      the throwable
+     * @param throwable        the throwable
      * @param exceptionClasses the exception classes
      * @return {@code true} if the exception or any of its causes is of the given type, {@code false} otherwise
      */
