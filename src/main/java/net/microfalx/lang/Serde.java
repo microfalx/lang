@@ -5,13 +5,22 @@ import com.esotericsoftware.kryo.Serializer;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 import com.esotericsoftware.kryo.serializers.CompatibleFieldSerializer;
+import com.esotericsoftware.kryo.serializers.DefaultSerializers;
+import com.esotericsoftware.kryo.serializers.ImmutableCollectionsSerializers;
+import com.esotericsoftware.kryo.serializers.OptionalSerializers;
 import com.esotericsoftware.kryo.util.Pool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.URI;
 import java.util.Map;
+import java.util.Optional;
+import java.util.OptionalDouble;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.regex.Pattern;
 
 import static net.microfalx.lang.ArgumentUtils.requireNonNull;
 
@@ -166,10 +175,24 @@ public class Serde {
         }
     }
 
+    private static void registerDefaultSerializers(Kryo kryo) {
+        kryo.addDefaultSerializer(AtomicInteger.class, new DefaultSerializers.AtomicIntegerSerializer());
+        kryo.addDefaultSerializer(AtomicLong.class, new DefaultSerializers.AtomicLongSerializer());
+        kryo.addDefaultSerializer(URI.class, new DefaultSerializers.URISerializer());
+        kryo.addDefaultSerializer(Pattern.class, new DefaultSerializers.PatternSerializer());
+        kryo.addDefaultSerializer(Optional.class, new OptionalSerializers.OptionalSerializer());
+        kryo.addDefaultSerializer(OptionalDouble.class, new OptionalSerializers.OptionalDoubleSerializer());
+        kryo.addDefaultSerializer(ConcurrentSkipListMap.class, new DefaultSerializers.ConcurrentSkipListMapSerializer());
+
+        ImmutableCollectionsSerializers.addDefaultSerializers(kryo);
+        ImmutableCollectionsSerializers.addDefaultSerializers(kryo);
+    }
+
     private static void updateKryo(Kryo kryo) {
         int version = VERSION.get();
         kryo.setRegistrationRequired(false);
         kryo.setDefaultSerializer(CompatibleFieldSerializer.class);
+        registerDefaultSerializers(kryo);
         for (Map.Entry<Class<?>, Integer> entry : SERIALIZER_IDS.entrySet()) {
             Class<?> clazz = entry.getKey();
             if (!SERIALIZERS.containsKey(clazz)) {
