@@ -65,7 +65,7 @@
 
     <properties>
         <java.version>17</java.version>
-        <bom.version>1.0.26</bom.version>
+        <bom.version>1.0.25</bom.version>
     </properties>
 
     <developers>
