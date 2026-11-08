@@ -12,6 +12,8 @@ import com.esotericsoftware.kryo.util.Pool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URI;
 import java.util.Map;
 import java.util.Optional;
@@ -156,6 +158,24 @@ public class Serde {
     }
 
     /**
+     * Serializes a value, including its class, into a byte array.
+     *
+     * @param value        the value to serialize; can be {@code null}
+     * @param outputStream the output stream to write the serialized bytes to; must not be {@code null}
+     * @throws com.esotericsoftware.kryo.KryoException if the value cannot be serialized
+     */
+    public static void serialize(Object value, OutputStream outputStream) {
+        requireNonNull(outputStream);
+        if (value == null) return;
+        Kryo kryo = obtain();
+        try (Output output = new Output(outputStream)) {
+            kryo.writeClassAndObject(output, value);
+        } finally {
+            POOL.free(kryo);
+        }
+    }
+
+    /**
      * Deserializes a value written by {@link #serialize(Object)}.
      *
      * @param bytes the serialized bytes
@@ -169,6 +189,25 @@ public class Serde {
         if (bytes.length == 0) throw new IllegalArgumentException("Cannot deserialize empty byte array");
         Kryo kryo = obtain();
         try (Input input = new Input(bytes)) {
+            return (T) kryo.readClassAndObject(input);
+        } finally {
+            POOL.free(kryo);
+        }
+    }
+
+    /**
+     * Deserializes a value written by {@link #serialize(Object)}.
+     *
+     * @param inputStream the serialized bytes
+     * @return the deserialized value; {@code null} if a {@code null} value was serialized
+     * @throws com.esotericsoftware.kryo.KryoException if the bytes are not a valid payload or reference
+     *                                                 a class that cannot be found
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> T deserialize(InputStream inputStream) {
+        requireNonNull(inputStream);
+        Kryo kryo = obtain();
+        try (Input input = new Input(inputStream)) {
             return (T) kryo.readClassAndObject(input);
         } finally {
             POOL.free(kryo);
