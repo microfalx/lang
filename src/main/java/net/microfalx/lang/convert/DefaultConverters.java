@@ -15,10 +15,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.time.*;
 import java.time.temporal.Temporal;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import static net.microfalx.lang.ArgumentUtils.requireNonNull;
@@ -210,8 +207,8 @@ class DefaultConverters {
         @Override
         public Map<?, ?> convert(Object value) {
             if (value == null) return Collections.emptyMap();
-            if (value instanceof Map) {
-                return (Map<?, ?>) value;
+            if (value instanceof Map<?, ?> m) {
+                return new HashMap<>(m);
             } else if (value instanceof String valueAsString) {
                 if (valueAsString.isEmpty()) return Collections.emptyMap();
                 try {
@@ -226,23 +223,36 @@ class DefaultConverters {
     }
 
     @SuppressWarnings("rawtypes")
-    static class CollectionConverter implements TypeConverter<Collection> {
+    static class ListConverter implements TypeConverter<List> {
 
         @Override
-        public Collection<?> convert(Object value) {
+        public List<?> convert(Object value) {
             if (value == null) return Collections.emptyList();
-            if (value instanceof Collection) {
-                return (Collection<?>) value;
+            if (value instanceof Collection<?> collection) {
+                return new ArrayList<>(collection);
             } else if (value instanceof String valueAsString) {
                 if (valueAsString.isEmpty()) return Collections.emptyList();
                 try {
-                    return Types.getJsonConverter().asCollection(valueAsString);
+                    return (List<?>) Types.getJsonConverter().asCollection(valueAsString);
                 } catch (IOException e) {
                     throw new TypeConversionException("Failed to decode JSON", e);
                 }
+            } else if (value.getClass().isArray()) {
+                return new ArrayList(Arrays.asList((Object[]) value));
             } else {
-                return throwConversionException(value, Collection.class, null);
+                return throwConversionException(value, List.class, null);
             }
+        }
+    }
+
+    @SuppressWarnings("rawtypes")
+    static class CollectionConverter implements TypeConverter<Collection> {
+
+        private final ListConverter delegate = new ListConverter();
+
+        @Override
+        public Collection<?> convert(Object value) {
+            return delegate.convert(value);
         }
     }
 
@@ -252,8 +262,8 @@ class DefaultConverters {
         @Override
         public Set<?> convert(Object value) {
             if (value == null) return Collections.emptySet();
-            if (value instanceof Set) {
-                return (Set<?>) value;
+            if (value instanceof Collection<?> collection) {
+                return new HashSet<>(collection);
             } else if (value instanceof String valueAsString) {
                 if (valueAsString.isEmpty()) return Collections.emptySet();
                 try {
@@ -261,6 +271,8 @@ class DefaultConverters {
                 } catch (IOException e) {
                     throw new TypeConversionException("Failed to decode JSON", e);
                 }
+            } else if (value.getClass().isArray()) {
+                return new HashSet<>(Arrays.asList((Object[]) value));
             } else {
                 return throwConversionException(value, Set.class, null);
             }
@@ -330,6 +342,7 @@ class DefaultConverters {
         TYPE_CONVERTER_MANAGER.register(Duration.class, new DurationConverter());
         TYPE_CONVERTER_MANAGER.register(Map.class, new MapConverter());
         TYPE_CONVERTER_MANAGER.register(Collection.class, new CollectionConverter());
+        TYPE_CONVERTER_MANAGER.register(List.class, new ListConverter());
         TYPE_CONVERTER_MANAGER.register(Set.class, new SetConverter());
     }
 }
