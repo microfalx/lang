@@ -135,7 +135,7 @@ class SerdeTest {
 
     @Test
     void deserializeRejectsNull() {
-        Assertions.assertNull(Serde.deserialize(null));
+        Assertions.assertNull(Serde.deserialize((byte[])null));
     }
 
     @Test
