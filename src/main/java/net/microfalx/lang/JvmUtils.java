@@ -234,6 +234,15 @@ public class JvmUtils {
     }
 
     /**
+     * Returns the library directory.
+     *
+     * @return a non-null instance
+     */
+    public static File getLibraryDirectory() {
+        return new File(getHomeDirectory(), "lib");
+    }
+
+    /**
      * Returns the working directory.
      *
      * @return a non-null instance
