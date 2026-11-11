@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 
 import static java.lang.System.currentTimeMillis;
 import static net.microfalx.lang.ArgumentUtils.requireNonNull;
+import static net.microfalx.lang.ArgumentUtils.requireNotEmpty;
 import static net.microfalx.lang.FileUtils.validateDirectoryExists;
 import static net.microfalx.lang.FileUtils.validateFileExists;
 import static net.microfalx.lang.StringUtils.*;
@@ -41,6 +42,7 @@ public class JvmUtils {
     public static final int UNAVAILABLE_PORT = -1;
 
     private static volatile File homeDirectory;
+    private static volatile File binDirectory;
     private static volatile File varDirectory;
     private static volatile File tmpDirectory;
     private static volatile File logsDirectory;
@@ -152,6 +154,38 @@ public class JvmUtils {
         if (homeDirectory == null) throw new IllegalStateException("JVM does not provide system property 'user.home'");
         JvmUtils.homeDirectory = new File(removeEndSlash(homeDirectory));
         return JvmUtils.homeDirectory;
+    }
+
+    /**
+     * Returns the user's bin directory.
+     *
+     * @return a non-null instance
+     */
+    public static File getBinDirectory() {
+        if (binDirectory != null) return binDirectory;
+        JvmUtils.binDirectory = new File(getHomeDirectory(), "bin");
+        return JvmUtils.binDirectory;
+    }
+
+    /**
+     * Returns the executable for the current platform from the process bin directory.
+     *
+     * @param executable the executable name
+     * @return a non-null instance
+     */
+    public static File getExecutable(String executable) {
+        return getExecutable(new File(getBinDirectory(), executable));
+    }
+
+    /**
+     * Changes the bin directory for current JVM.
+     * <p>
+     * This method is used mostly for testing purposes, to override the default bin directory.
+     *
+     * @param directory the new directory
+     */
+    public static void setBinDirectory(File directory) {
+        JvmUtils.binDirectory = requireNonNull(directory);
     }
 
     /**
@@ -394,6 +428,27 @@ public class JvmUtils {
         } else {
             return validateDirectoryExists(new File(directory, STORE_NAME));
         }
+    }
+
+    /**
+     * Returns the executable for the current platform.
+     *
+     * @param executable the executable
+     * @return the new ex
+     */
+    public static File getExecutable(File executable) {
+        requireNotEmpty(executable);
+        File finalExecutable = executable;
+        if (isWindows()) {
+            finalExecutable = new File(executable.getAbsolutePath() + ".exe");
+            if (!finalExecutable.exists()) {
+                finalExecutable = new File(executable.getAbsolutePath() + ".bat");
+            }
+            if (!finalExecutable.exists()) {
+                finalExecutable = new File(executable.getAbsolutePath() + ".cmd");
+            }
+        }
+        return executable;
     }
 
     /**
