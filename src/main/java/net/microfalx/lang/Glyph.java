@@ -102,6 +102,18 @@ public final class Glyph {
     public static final String MEMO = "📝";
     public static final String SPARKLES = "✨";
     public static final String FIRE = "🔥";
+    public static final String WARNING_SIGN = "⚠" + EMOJI;
+    public static final String INFO_SIGN = "ℹ" + EMOJI;
+    public static final String DOUBLE_EXCLAMATION = "‼" + EMOJI;
+    public static final String EXCLAMATION_QUESTION = "⁉" + EMOJI;
+    public static final String BELL_OFF = "🔕";
+    public static final String CONSTRUCTION = "🚧";
+    public static final String COLLISION = "💥";
+    public static final String BOMB = "💣";
+    public static final String SKULL = "💀";
+    public static final String SKULL_CROSSBONES = "☠" + EMOJI;
+    public static final String RADIOACTIVE = "☢" + EMOJI;
+    public static final String BIOHAZARD = "☣" + EMOJI;
 
     // ----------------------------------------------------
     // ARROWS / FLOW (text)
@@ -118,6 +130,13 @@ public final class Glyph {
     public static final String RETURN = "↵";
     public static final String REFRESH = "↻";
     public static final String UNDO = "↺";
+    public static final String ARROW_UP_DOWN = "↕" + TEXT;
+    public static final String DOUBLE_ARROW_LEFT = "⇐";
+    public static final String DOUBLE_ARROW_LEFT_RIGHT = "⇔";
+    public static final String ARROWS_EXCHANGE = "⇄";
+    public static final String ARROWS_UP_DOWN = "⇅";
+    public static final String ARROW_TO_BAR = "⇥";
+    public static final String ARROW_FROM_BAR = "⇤";
 
     // ----------------------------------------------------
     // ACTIONS / LIFECYCLE (emoji)
@@ -134,6 +153,12 @@ public final class Glyph {
     public static final String FAST_FORWARD = "⏩";
     public static final String ROCKET = "🚀";
     public static final String TEST_TUBE = "🧪";
+    public static final String SEEDLING = "🌱";
+    public static final String BROOM = "🧹";
+    public static final String PLUG = "🔌";
+    public static final String HOOK = "🪝";
+    public static final String HEARTBEAT = "💓";
+    public static final String TOMBSTONE = "🪦";
 
     // ----------------------------------------------------
     // PROGRESS / STATUS (emoji)
@@ -167,9 +192,14 @@ public final class Glyph {
     public static final String LOCK = "🔒";
     public static final String UNLOCK = "🔓";
     public static final String KEY = "🔑";
+    public static final String LOCKED_WITH_KEY = "🔐";
+    public static final String DETECTIVE = "🕵" + EMOJI;
     public static final String SHIELD = "🛡" + EMOJI;
     public static final String USER = "👤";
     public static final String COMPUTER = "💻";
+    public static final String ROBOT = "🤖";
+    public static final String BATTERY = "🔋";
+    public static final String LOW_BATTERY = "🪫";
 
     // ----------------------------------------------------
     // FILES / STORAGE (emoji)
@@ -181,6 +211,9 @@ public final class Glyph {
     public static final String CLIPBOARD = "📋";
     public static final String DATABASE = "🗄" + EMOJI;
     public static final String FLOPPY = "💾";
+    public static final String SCROLL = "📜";
+    public static final String BOOKMARK = "🔖";
+    public static final String BOOKS = "📚";
 
     // ----------------------------------------------------
     // NETWORK / CLOUD (emoji)
@@ -192,6 +225,25 @@ public final class Glyph {
     public static final String WIFI = "📶";
 
     // ----------------------------------------------------
+    // MESSAGING / SEND & RECEIVE (emoji)
+    // ----------------------------------------------------
+
+    public static final String SEND = "📤";
+    public static final String RECEIVE = "📥";
+    public static final String ENVELOPE = "✉" + EMOJI;
+    public static final String INCOMING_ENVELOPE = "📨";
+    public static final String ENVELOPE_ARROW = "📩";
+    public static final String MAILBOX_FULL = "📬";
+    public static final String MAILBOX_EMPTY = "📭";
+    public static final String POSTBOX = "📮";
+    public static final String SPEECH = "💬";
+    public static final String THOUGHT = "💭";
+    public static final String MEGAPHONE = "📣";
+    public static final String LOUDSPEAKER = "📢";
+    public static final String PHONE = "📞";
+    public static final String PAGER = "📟";
+
+    // ----------------------------------------------------
     // TIME / PERFORMANCE (emoji)
     // ----------------------------------------------------
 
@@ -201,6 +253,10 @@ public final class Glyph {
     public static final String HOURGLASS = "⏳";
     public static final String CALENDAR = "📅";
     public static final String FAST = "⚡";
+    public static final String SNAIL = "🐌";
+    public static final String TURTLE = "🐢";
+    public static final String RABBIT = "🐇";
+    public static final String SLEEPING = "💤";
 
     // ----------------------------------------------------
     // METRICS (emoji)
@@ -209,6 +265,8 @@ public final class Glyph {
     public static final String CHART = "📊";
     public static final String CHART_UP = "📈";
     public static final String CHART_DOWN = "📉";
+    public static final String TARGET = "🎯";
+    public static final String HUNDRED = "💯";
 
     // ----------------------------------------------------
     // DEBUG / DIAGNOSTICS (emoji)
@@ -218,6 +276,55 @@ public final class Glyph {
     public static final String MICROSCOPE = "🔬";
     public static final String MAGNIFIER = "🔍";
     public static final String MAGNIFIER_RIGHT = "🔎";
+    public static final String EYES = "👀";
+    public static final String MONOCLE = "🧐";
+    public static final String THINKING = "🤔";
+
+    // ----------------------------------------------------
+    // WEATHER / TEMPERATURE (emoji)
+    // ----------------------------------------------------
+
+    public static final String SUN = "☀" + EMOJI;
+    public static final String THUNDERSTORM = "⛈" + EMOJI;
+    public static final String RAINBOW = "🌈";
+    public static final String SNOWFLAKE = "❄" + EMOJI;
+    public static final String ICE = "🧊";
+    public static final String THERMOMETER = "🌡" + EMOJI;
+
+    // ----------------------------------------------------
+    // FUN / MOOD (emoji)
+    // ----------------------------------------------------
+
+    public static final String PARTY = "🎉";
+    public static final String CONFETTI = "🎊";
+    public static final String TROPHY = "🏆";
+    public static final String MEDAL = "🏅";
+    public static final String MUSCLE = "💪";
+    public static final String CLAP = "👏";
+    public static final String WAVE = "👋";
+    public static final String HANDSHAKE = "🤝";
+    public static final String CROSSED_FINGERS = "🤞";
+    public static final String PRAY = "🙏";
+    public static final String SHRUG = "🤷";
+    public static final String FACEPALM = "🤦";
+    public static final String SUNGLASSES = "😎";
+    public static final String SWEAT_SMILE = "😅";
+    public static final String SCREAM = "😱";
+    public static final String MIND_BLOWN = "🤯";
+    public static final String YAWN = "🥱";
+    public static final String GHOST = "👻";
+    public static final String ALIEN = "👽";
+    public static final String CLOWN = "🤡";
+    public static final String POOP = "💩";
+    public static final String UNICORN = "🦄";
+    public static final String CRYSTAL_BALL = "🔮";
+    public static final String MAGIC_WAND = "🪄";
+    public static final String DICE = "🎲";
+    public static final String PUZZLE = "🧩";
+    public static final String COFFEE = "☕";
+    public static final String COOKIE = "🍪";
+    public static final String HEART = "❤" + EMOJI;
+    public static final String BROKEN_HEART = "💔";
 
     // ----------------------------------------------------
     // TREES / BOXES (text)
