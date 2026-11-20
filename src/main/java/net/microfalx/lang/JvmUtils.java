@@ -303,9 +303,9 @@ public class JvmUtils {
         File directory = new File(getHomeDirectory(), "logs");
         logsDirectoryExist = directory.exists();
         if (!logsDirectoryExist) {
-            directory = getTemporaryDirectory();
+            directory = validateDirectoryExists(new File(getCacheDirectory(), "logs"));
         }
-        setLogsDirectory(directory);
+        logsDirectory = directory;
         return directory;
     }
 
